@@ -44,7 +44,7 @@ portfolio/
 ├── apps/
 │   ├── sifna/      # Next.js site, content from Sanity
 │   └── ashiq/      # Next.js site, content in code
-└── studio/         # Sanity Studio, where Sifna edits her work (not created yet)
+└── studio/         # Sanity Studio, where Sifna edits her work (project dfjdl2zn)
 ```
 
 Each app is its own npm project with its own `node_modules`. There are no npm workspaces.
@@ -233,7 +233,9 @@ In a long file, a one-line separator marks where each group in the [order above]
 ## Dependencies
 
 - Don't add a package without asking. First check whether Next.js, React, the browser or an installed package already does the job.
-- Planned packages: `motion` (both apps), and `next-sanity` with `@sanity/image-url` (Sifna). Anything else, ask first.
+- Planned packages: `motion` (both apps), and `@sanity/client` (Sifna). Anything else, ask first.
+  - Not `next-sanity`: it pulls in the whole Studio, and its live preview can't run in a static export.
+  - Not `@sanity/image-url`: GROQ returns image URLs, and a `next/image` loader adds the size.
 - Install inside the app folder (`apps/<app>`); each app has its own `package.json`.
 - Never hand-edit `package-lock.json`. Commit it whenever it changes.
 

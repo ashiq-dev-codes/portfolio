@@ -23,7 +23,7 @@ portfolio/
 ├── apps/
 │   ├── sifna/      # Sifna's site
 │   └── ashiq/      # Ashiq's site
-└── studio/         # Sanity Studio (coming soon)
+└── studio/         # Sanity Studio, where Sifna edits her work
 ```
 
 Each app is its own npm project. There are no workspaces or shared packages.
@@ -36,6 +36,14 @@ Requires Node.js 20.9 or newer.
 cd apps/sifna        # or apps/ashiq
 npm install
 npm run dev          # http://localhost:3000
+```
+
+To edit Sifna's content locally, run Sanity Studio:
+
+```bash
+cd studio
+npm install
+npm run dev          # http://localhost:3333
 ```
 
 | Command | What it does |
