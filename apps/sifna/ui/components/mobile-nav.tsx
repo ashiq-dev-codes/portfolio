@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, type Transition } from "motion/react";
@@ -13,18 +14,31 @@ type NavItem = {
   activePaths: string[];
 };
 
-const navItems: NavItem[] = [
+const contactSectionId = "contact";
+
+const pageItems: NavItem[] = [
   { href: "/", label: "Home", icon: "home", activePaths: ["/"] },
   { href: "/work", label: "Work", icon: "grid", activePaths: ["/work", "/projects"] },
   { href: "/about", label: "About", icon: "user", activePaths: ["/about"] },
-  { href: "#contact", label: "Contact", icon: "mail", activePaths: [] },
 ];
+
+const contactItem: NavItem = {
+  href: `#${contactSectionId}`,
+  label: "Contact",
+  icon: "mail",
+  activePaths: [],
+};
+
+const navItems = [...pageItems, contactItem];
 
 const pillSpring: Transition = { type: "spring", stiffness: 500, damping: 40 };
 
-// Phones only: the main links sit at the bottom, where the thumb already is.
+// Phones only: the main links sit at the bottom, where the thumb already is. Contact is a
+// section of every page, not a page, so it lights up while that section is on screen.
 export function MobileNav() {
   const pathname = usePathname();
+  const isContactInView = useIsSectionInView(contactSectionId);
+  const activeHref = isContactInView ? contactItem.href : activePageHref(pathname);
 
   return (
     <motion.nav
@@ -38,7 +52,7 @@ export function MobileNav() {
       <ul className="mx-auto flex max-w-sm rounded-full border border-line/80 bg-surface/85 p-1.5 shadow-lift backdrop-blur-md">
         {navItems.map((item) => (
           <li key={item.href} className="flex-1">
-            <MobileNavLink item={item} isActive={isActivePath(pathname, item.activePaths)} />
+            <MobileNavLink item={item} isActive={item.href === activeHref} />
           </li>
         ))}
       </ul>
@@ -51,7 +65,7 @@ function MobileNavLink({ item, isActive }: { item: NavItem; isActive: boolean })
     <Link
       href={item.href}
       aria-current={isActive ? "page" : undefined}
-      className={`relative flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-medium transition-colors active:scale-95 ${isActive ? "text-surface" : "text-muted"}`}
+      className={`relative flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[11px] font-medium transition-colors duration-300 active:scale-95 ${isActive ? "text-surface" : "text-muted"}`}
     >
       {isActive && (
         <motion.span
@@ -66,8 +80,30 @@ function MobileNavLink({ item, isActive }: { item: NavItem; isActive: boolean })
   );
 }
 
-function isActivePath(pathname: string, activePaths: string[]): boolean {
-  return activePaths.some((path) =>
-    path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`),
+/** True while the section's top has scrolled into the upper 60% of the screen. */
+function useIsSectionInView(sectionId: string): boolean {
+  const [isInView, setIsInView] = useState(false);
+
+  useEffect(() => {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry?.isIntersecting ?? false),
+      { rootMargin: "0px 0px -40% 0px" },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [sectionId]);
+
+  return isInView;
+}
+
+function activePageHref(pathname: string): string | null {
+  const item = pageItems.find((pageItem) =>
+    pageItem.activePaths.some((path) =>
+      path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`),
+    ),
   );
+  return item?.href ?? null;
 }
