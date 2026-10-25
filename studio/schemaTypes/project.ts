@@ -14,7 +14,6 @@ export const project = defineType({
     {name: 'settings', title: 'Settings'},
   ],
   initialValue: async (_params, {getClient}) => ({
-    isFeatured: false,
     order: await newProjectOrder(getClient),
   }),
   fields: [
@@ -56,13 +55,9 @@ export const project = defineType({
       options: {layout: 'grid'},
       validation: (rule) => rule.required().min(1).error('Add at least one image.'),
     }),
-    defineField({
-      name: 'isFeatured',
-      title: 'Show on the home page',
-      type: 'boolean',
-      group: 'main',
-      initialValue: false,
-    }),
+    // Replaced by the "On the home page" picker. Hidden, not removed, until the old values are
+    // cleared from Sanity, so Studio doesn't warn about an unknown field in the meantime.
+    defineField({name: 'isFeatured', type: 'boolean', hidden: true}),
     defineField({
       name: 'description',
       title: 'Description',
@@ -99,19 +94,14 @@ export const project = defineType({
     select: {
       title: 'title',
       category: 'category.title',
-      isFeatured: 'isFeatured',
       year: 'year',
       images: 'images',
       media: 'images.0',
     },
     // The third line shows in the bigger "detail" rows: a quick summary without opening it.
-    prepare: ({title, category, isFeatured, year, images, media}) => {
+    prepare: ({title, category, year, images, media}) => {
       const imageCount = Array.isArray(images) ? images.length : 0
-      const facts = [
-        imageCount === 1 ? '1 image' : `${imageCount} images`,
-        year,
-        isFeatured ? 'On the home page' : null,
-      ]
+      const facts = [imageCount === 1 ? '1 image' : `${imageCount} images`, year]
       return {
         title: title || 'Untitled project',
         subtitle: category || 'No category yet',

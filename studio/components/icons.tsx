@@ -21,17 +21,6 @@ export function StarIcon() {
   )
 }
 
-export function ProjectsIcon() {
-  return (
-    <Outline>
-      <rect x="5.5" y="5.5" width="6" height="6" rx="1" />
-      <rect x="13.5" y="5.5" width="6" height="6" rx="1" />
-      <rect x="5.5" y="13.5" width="6" height="6" rx="1" />
-      <rect x="13.5" y="13.5" width="6" height="6" rx="1" />
-    </Outline>
-  )
-}
-
 export function ProfileIcon() {
   return (
     <Outline>

@@ -21,7 +21,7 @@ export const projectProjection = `{
   "images": images[]${imageProjection},
   description,
   year,
-  isFeatured,
+  "isFeatured": _id in *[_id == "homePage"][0].featuredProjects[]._ref,
   order
 }`;
 
