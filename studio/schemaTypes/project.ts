@@ -1,4 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {CategoryPicker} from '../components/category-picker'
 import {WorkIcon} from '../components/icons'
 import {newProjectOrder} from '../lib/new-project-order'
 
@@ -31,6 +32,7 @@ export const project = defineType({
       to: [{type: 'category'}],
       group: 'main',
       options: {disableNew: true},
+      components: {input: CategoryPicker},
       validation: (rule) => rule.required().error('Pick a category.'),
     }),
     defineField({
@@ -95,13 +97,17 @@ export const project = defineType({
       title: 'title',
       category: 'category.title',
       year: 'year',
-      images: 'images',
       media: 'images.0',
+      // Previews can't read a whole array, so check the first few images one by one.
+      image0: 'images.0.asset',
+      image1: 'images.1.asset',
+      image2: 'images.2.asset',
+      image3: 'images.3.asset',
     },
     // The third line shows in the bigger "detail" rows: a quick summary without opening it.
-    prepare: ({title, category, year, images, media}) => {
-      const imageCount = Array.isArray(images) ? images.length : 0
-      const facts = [imageCount === 1 ? '1 image' : `${imageCount} images`, year]
+    prepare: ({title, category, year, media, image0, image1, image2, image3}) => {
+      const imageCount = [image0, image1, image2, image3].filter(Boolean).length
+      const facts = [imageCountLabel(imageCount), year]
       return {
         title: title || 'Untitled project',
         subtitle: category || 'No category yet',
@@ -111,3 +117,11 @@ export const project = defineType({
     },
   },
 })
+
+// Only the first four images are counted, so a fourth means "4 or more".
+function imageCountLabel(imageCount: number): string {
+  if (imageCount === 0) return 'No images yet'
+  if (imageCount === 1) return '1 image'
+  if (imageCount === 4) return '4+ images'
+  return `${imageCount} images`
+}
