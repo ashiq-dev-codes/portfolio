@@ -13,7 +13,7 @@ export function CategoryTabs({ categories, activeSlug }: CategoryTabsProps) {
   return (
     <nav
       aria-label="Categories"
-      className="-mx-5 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:px-0"
+      className="overflow-x-auto px-5 [scrollbar-width:none] md:px-0"
     >
       <ul className="flex w-max gap-2 rounded-full border border-line bg-surface p-1.5 shadow-card">
         <li>

@@ -5,7 +5,10 @@ export type IconName =
   | "mail"
   | "whatsapp"
   | "phone"
-  | "map-pin";
+  | "map-pin"
+  | "home"
+  | "grid"
+  | "user";
 
 type IconProps = {
   name: IconName;
@@ -60,6 +63,24 @@ function IconPath({ name }: { name: IconName }) {
         <>
           <path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z" />
           <circle cx="12" cy="10" r="2.5" />
+        </>
+      );
+    case "home":
+      return <path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" />;
+    case "grid":
+      return (
+        <>
+          <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+          <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+          <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+          <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
+        </>
+      );
+    case "user":
+      return (
+        <>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M5 20c1.2-3.5 3.8-5.5 7-5.5s5.8 2 7 5.5" />
         </>
       );
   }

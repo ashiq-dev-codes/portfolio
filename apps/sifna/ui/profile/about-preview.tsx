@@ -11,8 +11,8 @@ type AboutPreviewProps = {
 
 export function AboutPreview({ profile }: AboutPreviewProps) {
   return (
-    <section className="page-container grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
-      <Reveal className="mx-auto w-full max-w-sm lg:max-w-none">
+    <section className="page-container grid items-center gap-10 py-14 sm:gap-12 sm:py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20">
+      <Reveal className="mx-auto w-full max-w-[17rem] sm:max-w-sm lg:max-w-none">
         <ProfilePhoto profile={profile} />
       </Reveal>
       <div>
@@ -25,7 +25,7 @@ export function AboutPreview({ profile }: AboutPreviewProps) {
         <Reveal delay={0.2} className="mt-8">
           <SoftwareList software={profile.software} />
         </Reveal>
-        <Reveal delay={0.3} className="mt-10">
+        <Reveal delay={0.3} className="mt-8 grid sm:mt-10 sm:block">
           <ButtonLink href="/about" variant="secondary" icon="arrow-right">
             More about me
           </ButtonLink>

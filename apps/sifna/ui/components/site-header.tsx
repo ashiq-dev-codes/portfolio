@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { NavLink } from "@/ui/components/nav-link";
 
+// On phones the page links live in the bottom bar (MobileNav), so the header stays light.
 export function SiteHeader() {
   return (
     <header
       style={{ viewTransitionName: "site-header" }}
       className="sticky top-0 z-40 border-b border-line/70 bg-paper/80 backdrop-blur-md"
     >
-      <div className="page-container flex h-16 items-center justify-between gap-2">
+      <div className="page-container flex h-14 items-center justify-between gap-2 md:h-16">
         <Link
           href="/"
           aria-label="Home"
@@ -15,12 +16,14 @@ export function SiteHeader() {
         >
           sifna.
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-1 sm:gap-3">
-          <NavLink href="/work">Work</NavLink>
-          <NavLink href="/about">About</NavLink>
+        <nav aria-label="Main" className="flex items-center gap-1 md:gap-3">
+          <div className="hidden items-center gap-3 md:flex">
+            <NavLink href="/work">Work</NavLink>
+            <NavLink href="/about">About</NavLink>
+          </div>
           <Link
             href="#contact"
-            className="ml-1 inline-flex min-h-11 items-center rounded-full bg-ink px-4 text-sm font-medium text-surface transition duration-200 hover:-translate-y-0.5 hover:bg-brand active:scale-95 sm:px-5"
+            className="ml-1 inline-flex min-h-11 items-center rounded-full bg-ink px-5 text-sm font-medium whitespace-nowrap text-surface transition duration-200 hover:-translate-y-0.5 hover:bg-brand active:scale-95"
           >
             Let’s talk
           </Link>

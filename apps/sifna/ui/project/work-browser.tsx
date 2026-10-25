@@ -20,19 +20,20 @@ export function WorkBrowser({ categories, projects, activeCategory }: WorkBrowse
   const projectLabel = projects.length === 1 ? "project" : "projects";
 
   return (
-    <section className="page-container pt-10 pb-8 sm:pt-16">
+    <section className="page-container pt-8 pb-4 sm:pt-16 sm:pb-8">
       <SectionHeading
         isPageTitle
         eyebrow={`${projects.length} ${projectLabel}`}
         title={activeCategory?.title ?? "All work"}
         text={activeCategory ? activeCategory.description : allWorkText}
       />
-      <div className="mt-10">
+      {/* On phones the filters stick under the header, so switching is one tap at any scroll. */}
+      <div className="sticky top-14 z-30 -mx-5 mt-6 bg-paper/85 py-3 backdrop-blur-md md:static md:mx-0 md:mt-10 md:bg-transparent md:py-0 md:backdrop-blur-none">
         <CategoryTabs categories={categories} activeSlug={activeSlug} />
       </div>
       {/* A new key per category makes the grid crossfade when the filter changes. */}
       <ViewTransition key={activeSlug ?? "all"} name="work-grid" share="auto" enter="auto" default="none">
-        <div className="mt-10">
+        <div className="mt-5 sm:mt-10">
           <ProjectGrid projects={projects} />
         </div>
       </ViewTransition>

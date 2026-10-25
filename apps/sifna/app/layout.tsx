@@ -1,10 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Kode_Mono } from "next/font/google";
 import { profileRepository } from "@/infrastructure/repositories";
+import { MobileNav } from "@/ui/components/mobile-nav";
 import { MotionProvider } from "@/ui/components/motion-provider";
 import { SiteFooter } from "@/ui/components/site-footer";
 import { SiteHeader } from "@/ui/components/site-header";
 import "./globals.css";
+
+// "cover" lets the page reach the phone's rounded corners; the bottom bar keeps clear of the
+// home indicator with the safe-area padding. The colour tints the phone's browser bar.
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#f5f3ee",
+};
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -42,6 +50,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </main>
           <SiteFooter profile={profile} />
+          <MobileNav />
         </MotionProvider>
       </body>
     </html>
