@@ -106,7 +106,13 @@ apps/<app>/
   - The project belongs to Ashiq's personal account `ashiq.dev.codes@gmail.com`, never his company one.
   - Deploy with `npm run build` then `firebase deploy --only hosting` inside `apps/<app>`, and only
     when Ashiq asks.
-  - Rebuilding Sifna's site when she publishes in Sanity is not set up yet.
+  - Sifna's site also deploys from GitHub Actions ([deploy-sifna.yml](.github/workflows/deploy-sifna.yml)):
+    on a Sanity webhook when she publishes, on pushes to `main` that touch `apps/sifna`, or by hand.
+    It signs in to Google without a key (Workload Identity Federation, pool `github`, provider
+    `portfolio-repo`), as `github-deployer@portfolio-as-11.iam.gserviceaccount.com`, which may only
+    manage Hosting and only for this repo's `main` branch.
+  - Google tools (Firebase CLI, gcloud) use `ashiq.dev.codes@gmail.com`; pass `--account` on every
+    command and leave the company account as the gcloud default.
 - Server code needed later (like an AI demo on Ashiq's site) goes in a Cloudflare Worker, not in Next.js.
 
 ## Static export

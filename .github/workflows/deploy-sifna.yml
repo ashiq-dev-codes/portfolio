@@ -1,0 +1,53 @@
+# Builds Sifna's site with the latest Sanity content and deploys it to https://sifna.web.app
+name: Deploy Sifna's site
+
+on:
+  # Sent by the Sanity webhook every time Sifna publishes in Studio.
+  repository_dispatch:
+    types: [sanity-publish]
+  # A code change to her site.
+  push:
+    branches: [main]
+    paths:
+      - "apps/sifna/**"
+      - ".github/workflows/deploy-sifna.yml"
+  # The "Run workflow" button on GitHub, for a manual redeploy.
+  workflow_dispatch:
+
+# Several quick publishes queue up: the running deploy finishes, and only the newest waiting one
+# runs after it, so the site always ends on her latest content.
+concurrency:
+  group: deploy-sifna
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  # Lets GitHub prove to Google which repo is asking, so no deploy key is stored anywhere.
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/sifna
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/sifna/package-lock.json
+
+      - run: npm ci
+
+      # Fetches her content from Sanity and writes the static site to out/.
+      - run: npm run build
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/338021781599/locations/global/workloadIdentityPools/github/providers/portfolio-repo
+          service_account: github-deployer@portfolio-as-11.iam.gserviceaccount.com
+
+      - run: npx --yes firebase-tools@15.34.0 deploy --only hosting --project portfolio-as-11 --non-interactive
