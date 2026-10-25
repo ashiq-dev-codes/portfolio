@@ -11,16 +11,28 @@ export function FeaturedWork({ projects }: FeaturedWorkProps) {
   if (projects.length === 0) return null;
 
   return (
-    <section className="page-container py-20">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <section className="page-container py-14 sm:py-20">
+      <div className="flex items-end justify-between gap-6">
         <SectionHeading eyebrow="Selected work" title="A few favourites" />
-        <ButtonLink href="/work" variant="secondary" icon="arrow-right">
-          See all work
-        </ButtonLink>
+        <div className="hidden sm:block">
+          <SeeAllWorkButton />
+        </div>
       </div>
-      <div className="mt-12">
+      <div className="mt-8 sm:mt-12">
         <ProjectGrid projects={projects} />
       </div>
+      {/* On phones the button follows the work, where the thumb is after scrolling through it. */}
+      <div className="mt-2 grid sm:hidden">
+        <SeeAllWorkButton />
+      </div>
     </section>
+  );
+}
+
+function SeeAllWorkButton() {
+  return (
+    <ButtonLink href="/work" variant="secondary" icon="arrow-right">
+      See all work
+    </ButtonLink>
   );
 }

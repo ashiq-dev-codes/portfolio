@@ -16,7 +16,7 @@ export function ProfileHero({ profile, collageProjects, projectCount, categoryCo
   return (
     <section className="relative overflow-hidden">
       <HeroBackdrop />
-      <div className="page-container relative grid items-center gap-14 pt-12 pb-16 sm:pt-20 lg:grid-cols-[1.15fr_1fr] lg:pt-24 lg:pb-24">
+      <div className="page-container relative grid items-center gap-12 pt-8 pb-10 sm:gap-14 sm:pt-20 sm:pb-16 lg:grid-cols-[1.15fr_1fr] lg:pt-24 lg:pb-24">
         <div>
           <Reveal>
             <Eyebrow>
@@ -24,14 +24,15 @@ export function ProfileHero({ profile, collageProjects, projectCount, categoryCo
             </Eyebrow>
           </Reveal>
           <Reveal delay={0.08}>
-            <h1 className="mt-6 text-5xl leading-[0.95] font-semibold tracking-tight text-balance sm:text-7xl xl:text-8xl">
+            <h1 className="mt-5 text-[2.75rem] leading-[0.98] font-semibold tracking-tight text-balance sm:mt-6 sm:text-7xl xl:text-8xl">
               {profile.headline}
             </h1>
           </Reveal>
           <Reveal delay={0.16}>
-            <div className="mt-10 flex flex-wrap gap-3">
+            {/* Two equal buttons side by side on phones, natural width from tablets up. */}
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:flex sm:flex-wrap">
               <ButtonLink href="/work" icon="arrow-right">
-                View my work
+                View work
               </ButtonLink>
               <ButtonLink href="#contact" variant="secondary">
                 Let’s talk
@@ -39,7 +40,7 @@ export function ProfileHero({ profile, collageProjects, projectCount, categoryCo
             </div>
           </Reveal>
           <Reveal delay={0.24}>
-            <dl className="mt-12 flex gap-10 font-mono">
+            <dl className="mt-10 flex gap-10 font-mono sm:mt-12">
               <HeroStat value={projectCount} label="projects" />
               <HeroStat value={categoryCount} label="disciplines" />
             </dl>

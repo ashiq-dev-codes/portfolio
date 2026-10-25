@@ -17,10 +17,15 @@ const imageSizes = "(min-width: 1024px) 60vw, 100vw";
 export function ProjectDetail({ project }: ProjectDetailProps) {
   const otherImages = project.images.slice(1);
 
+  // On phones the work comes first and the text follows (`order-last`); from lg the text sits
+  // in a sticky column beside the images. The DOM keeps the title first for screen readers.
   return (
-    <article className="page-container grid gap-10 pt-8 pb-16 sm:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
+    <article className="page-container grid gap-6 pt-3 pb-8 sm:gap-10 sm:pt-12 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-16">
+      <div className="lg:hidden">
+        <BackToCategory project={project} />
+      </div>
       <ProjectInfo project={project} />
-      <div className="space-y-6 sm:space-y-8">
+      <div className="space-y-4 sm:space-y-8">
         <ProjectCoverTransition projectSlug={project.slug}>
           <ProjectImage image={project.cover} isPriority />
         </ProjectCoverTransition>
@@ -35,27 +40,23 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
 }
 
 function ProjectInfo({ project }: ProjectDetailProps) {
-  const categoryHref = `/work/${project.category.slug}`;
-
   return (
-    <div className="lg:sticky lg:top-24 lg:self-start">
+    <div className="order-last lg:sticky lg:top-24 lg:order-none lg:self-start">
       <Reveal>
-        <Link
-          href={categoryHref}
-          className="group inline-flex min-h-11 items-center gap-2 text-muted transition-colors hover:text-ink"
-        >
-          <Icon name="arrow-left" className="size-5 transition-transform group-hover:-translate-x-1" />
-          All {project.category.title.toLowerCase()}
-        </Link>
-        <Eyebrow className="mt-6 text-brand">{project.category.title}</Eyebrow>
-        <h1 className="mt-3 text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
+        <div className="hidden lg:block">
+          <BackToCategory project={project} />
+        </div>
+        <Eyebrow className="text-brand lg:mt-6">{project.category.title}</Eyebrow>
+        <h1 className="mt-3 text-[2rem] leading-tight font-semibold tracking-tight text-balance sm:text-5xl">
           {project.title}
         </h1>
         {project.description && (
-          <p className="mt-5 text-lg whitespace-pre-line text-pretty text-muted">{project.description}</p>
+          <p className="mt-4 text-base whitespace-pre-line text-pretty text-muted sm:mt-5 sm:text-lg">
+            {project.description}
+          </p>
         )}
         <ProjectFacts project={project} />
-        <div className="mt-8">
+        <div className="mt-6 grid sm:mt-8 sm:block">
           <ButtonLink href="#contact" icon="arrow-right">
             Want one like this?
           </ButtonLink>
@@ -65,11 +66,23 @@ function ProjectInfo({ project }: ProjectDetailProps) {
   );
 }
 
+function BackToCategory({ project }: ProjectDetailProps) {
+  return (
+    <Link
+      href={`/work/${project.category.slug}`}
+      className="group inline-flex min-h-11 items-center gap-2 text-muted transition-colors hover:text-ink"
+    >
+      <Icon name="arrow-left" className="size-5 transition-transform group-hover:-translate-x-1" />
+      All {project.category.title.toLowerCase()}
+    </Link>
+  );
+}
+
 function ProjectFacts({ project }: ProjectDetailProps) {
   const imageCount = project.images.length;
 
   return (
-    <dl className="mt-8 grid grid-cols-2 gap-4 border-y border-line py-5 font-mono text-sm">
+    <dl className="mt-6 grid grid-cols-2 gap-4 border-y border-line py-4 font-mono text-sm sm:mt-8 sm:py-5">
       <div>
         <dt className="text-muted">Category</dt>
         <dd className="mt-1">{project.category.title}</dd>

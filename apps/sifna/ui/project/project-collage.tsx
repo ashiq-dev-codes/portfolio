@@ -18,7 +18,7 @@ const entranceStep = 0.15;
 
 export function ProjectCollage({ projects }: ProjectCollageProps) {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-md lg:max-w-none">
+    <div className="relative mx-auto aspect-square w-full max-w-[21rem] sm:max-w-md lg:max-w-none">
       {projects.slice(0, cardPlacements.length).map((project, index) => (
         <Reveal
           key={project.slug}

@@ -55,6 +55,8 @@ html {
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+  /* Buttons have their own pressed state; the grey phone tap flash only looks broken. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection {
@@ -114,15 +116,18 @@ body {
   animation: 350ms var(--ease-out-soft) 100ms both rise-in;
 }
 
-/* The header stays put while the page under it changes. */
-::view-transition-group(site-header) {
+/* The header and the phone's bottom bar stay put while the page under them changes. */
+::view-transition-group(site-header),
+::view-transition-group(mobile-nav) {
   animation: none;
   z-index: 100;
 }
-::view-transition-old(site-header) {
+::view-transition-old(site-header),
+::view-transition-old(mobile-nav) {
   display: none;
 }
-::view-transition-new(site-header) {
+::view-transition-new(site-header),
+::view-transition-new(mobile-nav) {
   animation: none;
 }
 

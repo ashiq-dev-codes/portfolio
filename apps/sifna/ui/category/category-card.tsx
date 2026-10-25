@@ -23,7 +23,7 @@ export function CategoryCard({ category, projects }: CategoryCardProps) {
   return (
     <Link
       href={`/work/${category.slug}`}
-      className="group relative flex h-80 flex-col overflow-hidden rounded-3xl border border-line bg-surface p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift active:scale-[0.99] sm:h-96 sm:p-8"
+      className="group relative flex h-[19rem] flex-col overflow-hidden rounded-3xl border border-line bg-surface p-6 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift active:scale-[0.98] sm:h-96 sm:p-8"
     >
       <div className="relative z-10 flex items-start justify-between gap-4">
         <div>
@@ -42,7 +42,7 @@ export function CategoryCard({ category, projects }: CategoryCardProps) {
       {previews.map((project, index) => (
         <div
           key={project.slug}
-          className={`absolute -bottom-10 w-[34%] transition duration-500 ease-out ${fanPlacements[index]}`}
+          className={`absolute -bottom-8 w-[38%] transition duration-500 ease-out sm:-bottom-10 sm:w-[34%] ${fanPlacements[index]}`}
         >
           <div className="aspect-3/4 overflow-hidden rounded-xl border-4 border-surface shadow-lift">
             <ArtworkImage image={project.cover} sizes="(min-width: 640px) 14vw, 30vw" className="size-full object-cover" />

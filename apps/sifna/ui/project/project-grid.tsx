@@ -17,9 +17,9 @@ export function ProjectGrid({ projects }: ProjectGridProps) {
   }
 
   return (
-    <ul className="columns-2 gap-4 sm:columns-3 sm:gap-6 lg:columns-4">
+    <ul className="columns-2 gap-3 sm:columns-3 sm:gap-6 lg:columns-4">
       {projects.map((project, index) => (
-        <li key={project.slug} className="mb-6 break-inside-avoid sm:mb-8">
+        <li key={project.slug} className="mb-5 break-inside-avoid sm:mb-8">
           <Reveal delay={(index % largestColumnCount) * staggerStep}>
             <ProjectCard project={project} sizes={cardSizes} />
           </Reveal>

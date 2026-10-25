@@ -30,8 +30,8 @@ export function ProjectCard({ project, sizes }: ProjectCardProps) {
           )}
         </div>
       </ProjectCoverTransition>
-      <div className="mt-3 flex items-baseline justify-between gap-3 px-1">
-        <h3 className="leading-snug font-medium transition-colors group-hover:text-brand">
+      <div className="mt-2.5 flex items-baseline justify-between gap-3 px-1 sm:mt-3">
+        <h3 className="text-sm leading-snug font-medium transition-colors group-hover:text-brand sm:text-base">
           {project.title}
         </h3>
         <span className="hidden shrink-0 font-mono text-xs text-muted sm:inline">
