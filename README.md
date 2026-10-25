@@ -48,7 +48,7 @@ npm run dev          # http://localhost:3000
 
 ### Ashiq's site (Firebase Hosting)
 
-Firebase project `portfolio-as-11`, owned by `ashiq.dev.codes@gmail.com`. The config is in [apps/ashiq/firebase.json](apps/ashiq/firebase.json).
+URL https://ashiq.web.app: site `ashiq` in Firebase project `portfolio-as-11`, owned by `ashiq.dev.codes@gmail.com`. The config is in [apps/ashiq/firebase.json](apps/ashiq/firebase.json).
 
 ```bash
 cd apps/ashiq

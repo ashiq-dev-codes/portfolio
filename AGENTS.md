@@ -101,7 +101,8 @@ apps/<app>/
 - This Next.js version has breaking changes from older tutorials and training data. Before using an API, read its guide in `apps/<app>/node_modules/next/dist/docs/`.
 - **Sanity** (free plan) holds Sifna's projects and images. It is fetched at **build time** only.
 - **Hosting**: each app builds to `out/` with `npm run build`, run inside `apps/<app>`.
-  - **Ashiq**: Firebase Hosting (Spark plan), project `portfolio-as-11`, config in `apps/ashiq/firebase.json`.
+  - **Ashiq**: Firebase Hosting (Spark plan), site `ashiq` (https://ashiq.web.app) in project
+    `portfolio-as-11`, config in `apps/ashiq/firebase.json`.
     It belongs to Ashiq's personal account `ashiq.dev.codes@gmail.com`, never his company one.
     Deploy with `firebase deploy --only hosting` from `apps/ashiq`, and only when Ashiq asks.
   - **Sifna**: Cloudflare Pages (not set up yet). When she publishes in Sanity, a webhook calls the
