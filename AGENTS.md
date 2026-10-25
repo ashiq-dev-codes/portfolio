@@ -26,11 +26,13 @@ Some folders have their own `AGENTS.md` with rules that only matter there:
 
 | File | Covers |
 | --- | --- |
-| [apps/sifna/AGENTS.md](apps/sifna/AGENTS.md) | Sanity content, Sifna's design, images |
+| [apps/sifna/AGENTS.md](apps/sifna/AGENTS.md) | Content from Sanity, Sifna's design, Sanity images |
+| [apps/ashiq/AGENTS.md](apps/ashiq/AGENTS.md) | Content in code, Ashiq's design, local images |
 
-Next.js also creates an `AGENTS.md` in each app with a version notice between the `nextjs-agent-rules` markers, and re-adds it on `next dev`. Don't edit or delete that block; put app rules below it. `apps/ashiq/AGENTS.md` has only that notice for now.
+Both app files have the same sections, so the two apps stay mirror images. Next.js also writes a version notice between the `nextjs-agent-rules` markers in each one and re-adds it on `next dev`. Don't edit or delete that block; put app rules below it.
 
-- Each rule lives in one file only: here if it applies everywhere, or in the folder where someone would break it.
+- Each rule lives in one file only: here if it applies to both apps, or in the app where someone would break it. Never copy a rule into both app files; move it here instead.
+- When you add a rule to one app's file, check whether the other app needs its own version of it.
 - Add a folder file only when a folder has several rules nothing outside it needs, and list it above.
 
 ## Project layout
@@ -44,6 +46,52 @@ portfolio/
 ```
 
 Each app is its own npm project with its own `node_modules`. There are no npm workspaces.
+
+## Architecture
+
+Both apps use the same simple, clean DDD layout. Only the data source differs: Sanity for Sifna, files in code for Ashiq.
+
+```text
+apps/<app>/
+├── app/                              # routes only: page.tsx, layout.tsx
+├── domain/                           # what a portfolio IS: plain TypeScript
+│   ├── project/
+│   │   ├── project.ts                # Project type + pure rules (sorting, featured, ...)
+│   │   └── project-repository.ts     # interface: how the app asks for projects
+│   └── profile/
+│       ├── profile.ts                # name, bio, contact links, socials
+│       └── profile-repository.ts
+├── infrastructure/                   # where data COMES FROM
+│   ├── sanity/  or  content/         # repository implementations + mappers
+│   └── repositories.ts               # picks the implementations (like injection_container.dart)
+└── ui/                               # how it LOOKS
+    ├── components/                   # app-wide pieces: Button, Section, Reveal, ...
+    └── project/                      # pieces for one domain: ProjectCard, ProjectGallery, ...
+```
+
+### Layers and who may import whom
+
+| Layer | Holds | May import |
+| --- | --- | --- |
+| `domain/` | Types, pure rules, repository interfaces | Nothing outside `domain/`. No React, Next.js or Sanity. |
+| `infrastructure/` | Repository implementations, data clients, mappers | `domain/` |
+| `ui/` | Components that receive data as props | `domain/` (types only) and `ui/` |
+| `app/` | Routes that fetch and compose | Everything: it is where the layers meet |
+
+- **One folder per domain concept** (`project`, `profile`, later `category`, `experience`, ...), named with the words Sifna and Ashiq use. The same folder name appears in `domain/` and `ui/`.
+- **Raw data never leaves `infrastructure/`.** A mapper turns each Sanity document or content entry into a domain type, and fills safe defaults for empty fields. Pages and components only ever see domain types.
+- **Components never fetch.** Only routes in `app/` call repositories (from `infrastructure/repositories.ts`), at build time, and pass the results down as props.
+- **Routes stay thin.** A `page.tsx` gets the data, then composes `ui/` sections. Markup and styling live in `ui/`.
+- **Business rules live in `domain/`** as pure functions (like `sortByOrder` or `featuredFirst`), not inside components or mappers.
+- **No application layer yet.** Pages call repositories and domain functions directly. Add `application/` use cases only when a page needs logic that combines several repositories.
+- **Changing the data source touches only `infrastructure/`.** If Ashiq's content moves to Sanity one day, `domain/`, `ui/` and `app/` don't change.
+
+### Naming
+
+- Files and folders are kebab-case: `project-card.tsx`, `project-repository.ts`.
+- One main export per file, named after the file: `project-card.tsx` exports `ProjectCard`.
+- Repository interfaces are named after the concept (`ProjectRepository`); implementations are named after their source (`SanityProjectRepository`, `ContentProjectRepository`).
+- Import with the `@/` alias (`@/domain/project/project`), never long `../../` paths.
 
 ## Stack
 
@@ -103,7 +151,8 @@ Rules that keep motion smooth instead of annoying:
 ### Fast and accessible
 
 - **Mobile first.** Most visitors open a portfolio link on their phone. Check every page, and every animation, at phone width.
-- Pages must load fast: size images, lazy-load anything below the fold, and keep client JavaScript small.
+- Pages must load fast and keep client JavaScript small.
+- Images: serve them at the size each layout needs, set width and height (or an aspect ratio) so the layout doesn't jump while they load, and lazy-load everything below the fold. Only the first visible image loads eagerly.
 - Components are Server Components by default. Add `"use client"` only when a component needs state, effects or browser APIs, and keep that component small.
 - Use semantic HTML (`header`, `main`, `nav`, `section`) and give every image a real `alt` text.
 - Style with Tailwind classes. Put shared colors and fonts in the app's theme in `app/globals.css`, not as raw values repeated across files.
@@ -135,6 +184,7 @@ Run commands inside the app folder (`apps/sifna` or `apps/ashiq`):
 
 - `npm run build` and `npm run lint` pass in every app you changed.
 - No feature from the [Static export](#static-export) list, and nothing that needs a paid plan.
+- New code sits in the right [layer](#architecture), and no layer imports one it shouldn't.
 - Pages look polished and animate smoothly at phone width and on desktop, with reduced motion respected.
 - Sifna's work comes from Sanity, not from code.
 - You explained the change to Ashiq in plain words.
