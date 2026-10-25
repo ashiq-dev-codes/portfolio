@@ -23,7 +23,7 @@ Rules for this app only. The repo-wide rules are in the [root AGENTS.md](../../A
 ## Design is Sifna's
 
 - She is the designer. Follow her Figma file or her reference sites for layout, fonts, colors and spacing. Don't invent a visual style; ask Ashiq if something isn't covered.
-- Her work is the focus. Keep the UI around it quiet and let the images be large.
+- Her work is the star. Motion and UI details exist to show it off (reveals, hover zooms, the thumbnail-to-full-image morph), never to compete with it.
 
 ## Images
 
