@@ -1,6 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {CategoryPicker} from '../components/category-picker'
 import {WorkIcon} from '../components/icons'
+import {ImagesInput} from '../components/images-input'
 import {newProjectOrder} from '../lib/new-project-order'
 
 export const project = defineType({
@@ -40,7 +41,7 @@ export const project = defineType({
       title: 'Images',
       type: 'array',
       group: 'main',
-      description: 'The first image is the cover. Hold and drag to reorder.',
+      description: 'Hold and drag to reorder. The first one is the cover.',
       of: [
         defineArrayMember({
           type: 'image',
@@ -54,7 +55,9 @@ export const project = defineType({
           ],
         }),
       ],
-      options: {layout: 'grid'},
+      // The upload area in ImagesInput replaces Sanity's "Add item" button.
+      options: {layout: 'grid', disableActions: ['add']},
+      components: {input: ImagesInput},
       validation: (rule) => rule.required().min(1).error('Add at least one image.'),
     }),
     // Replaced by the "On the home page" picker. Hidden, not removed, until the old values are
