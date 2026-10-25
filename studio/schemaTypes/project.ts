@@ -96,11 +96,28 @@ export const project = defineType({
   ],
   orderings: [{title: 'Order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
   preview: {
-    select: {title: 'title', category: 'category.title', isFeatured: 'isFeatured', media: 'images.0'},
-    prepare: ({title, category, isFeatured, media}) => ({
-      title: title || 'Untitled project',
-      subtitle: `${category || 'No category yet'}${isFeatured ? ' · On the home page' : ''}`,
-      media,
-    }),
+    select: {
+      title: 'title',
+      category: 'category.title',
+      isFeatured: 'isFeatured',
+      year: 'year',
+      images: 'images',
+      media: 'images.0',
+    },
+    // The third line shows in the bigger "detail" rows: a quick summary without opening it.
+    prepare: ({title, category, isFeatured, year, images, media}) => {
+      const imageCount = Array.isArray(images) ? images.length : 0
+      const facts = [
+        imageCount === 1 ? '1 image' : `${imageCount} images`,
+        year,
+        isFeatured ? 'On the home page' : null,
+      ]
+      return {
+        title: title || 'Untitled project',
+        subtitle: category || 'No category yet',
+        description: facts.filter(Boolean).join(' · '),
+        media,
+      }
+    },
   },
 })

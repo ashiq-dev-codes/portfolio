@@ -37,4 +37,11 @@ export const category = defineType({
     }),
   ],
   orderings: [{title: 'Order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
+  preview: {
+    select: {title: 'title', description: 'description'},
+    prepare: ({title, description}) => ({
+      title: title || 'Untitled category',
+      subtitle: description || 'Tap to see the projects',
+    }),
+  },
 })
