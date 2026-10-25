@@ -1,0 +1,8 @@
+{
+  "hosting": {
+    "site": "sifna",
+    "public": "out",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*"]
+  }
+}

@@ -14,7 +14,7 @@ Both sites are free to run: no paid plan or card is needed for any part of the s
 - [Next.js 16](https://nextjs.org) (App Router), TypeScript and Tailwind CSS 4
 - Static export (`output: "export"`): every site builds to plain HTML, CSS and JS
 - [Sanity](https://www.sanity.io) for Sifna's projects and images
-- [Firebase Hosting](https://firebase.google.com/docs/hosting) for Ashiq's site, [Cloudflare Pages](https://pages.cloudflare.com) planned for Sifna's
+- [Firebase Hosting](https://firebase.google.com/docs/hosting) for both sites, one site each in the same project
 
 ## Structure
 
@@ -46,24 +46,25 @@ npm run dev          # http://localhost:3000
 
 ## Deploy
 
-### Ashiq's site (Firebase Hosting)
+Both sites are on Firebase Hosting, in project `portfolio-as-11` owned by `ashiq.dev.codes@gmail.com`:
 
-URL https://ashiq.web.app: site `ashiq` in Firebase project `portfolio-as-11`, owned by `ashiq.dev.codes@gmail.com`. The config is in [apps/ashiq/firebase.json](apps/ashiq/firebase.json).
+| App | URL | Firebase site |
+| --- | --- | --- |
+| [apps/ashiq](apps/ashiq) | https://ashiq.web.app | `ashiq` |
+| [apps/sifna](apps/sifna) | https://sifna.web.app | `sifna` |
+
+Each app's `firebase.json` names its site. To deploy one:
 
 ```bash
-cd apps/ashiq
+cd apps/ashiq                     # or apps/sifna
 firebase login:list               # must show ashiq.dev.codes@gmail.com for this folder
 npm run build
 firebase deploy --only hosting
 ```
 
-### Sifna's site (Cloudflare Pages)
+On a new machine, run `firebase login:use ashiq.dev.codes@gmail.com` once inside each app folder.
 
-Not set up yet. The plan:
-
-1. A Cloudflare Pages project connected to this repo, with root directory `apps/sifna`, build command `npm run build` and output folder `out`.
-2. Build watch paths are limited to her app's folder, so a change to Ashiq's site doesn't rebuild hers.
-3. When Sifna publishes in Sanity, a webhook calls the Cloudflare deploy hook and her site rebuilds.
+Rebuilding Sifna's site automatically when she publishes in Sanity is not set up yet.
 
 ## For contributors and AI agents
 
