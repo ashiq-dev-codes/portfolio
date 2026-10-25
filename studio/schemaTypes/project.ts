@@ -1,5 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {CategoryPicker} from '../components/category-picker'
 import {WorkIcon} from '../components/icons'
+import {ImagesInput} from '../components/images-input'
 import {newProjectOrder} from '../lib/new-project-order'
 
 export const project = defineType({
@@ -14,7 +16,6 @@ export const project = defineType({
     {name: 'settings', title: 'Settings'},
   ],
   initialValue: async (_params, {getClient}) => ({
-    isFeatured: false,
     order: await newProjectOrder(getClient),
   }),
   fields: [
@@ -32,6 +33,7 @@ export const project = defineType({
       to: [{type: 'category'}],
       group: 'main',
       options: {disableNew: true},
+      components: {input: CategoryPicker},
       validation: (rule) => rule.required().error('Pick a category.'),
     }),
     defineField({
@@ -39,7 +41,7 @@ export const project = defineType({
       title: 'Images',
       type: 'array',
       group: 'main',
-      description: 'The first image is the cover. Hold and drag to reorder.',
+      description: 'Hold and drag to reorder. The first one is the cover.',
       of: [
         defineArrayMember({
           type: 'image',
@@ -53,16 +55,14 @@ export const project = defineType({
           ],
         }),
       ],
-      options: {layout: 'grid'},
+      // The upload area in ImagesInput replaces Sanity's "Add item" button.
+      options: {layout: 'grid', disableActions: ['add']},
+      components: {input: ImagesInput},
       validation: (rule) => rule.required().min(1).error('Add at least one image.'),
     }),
-    defineField({
-      name: 'isFeatured',
-      title: 'Show on the home page',
-      type: 'boolean',
-      group: 'main',
-      initialValue: false,
-    }),
+    // Replaced by the "On the home page" picker. Hidden, not removed, until the old values are
+    // cleared from Sanity, so Studio doesn't warn about an unknown field in the meantime.
+    defineField({name: 'isFeatured', type: 'boolean', hidden: true}),
     defineField({
       name: 'description',
       title: 'Description',
@@ -99,19 +99,18 @@ export const project = defineType({
     select: {
       title: 'title',
       category: 'category.title',
-      isFeatured: 'isFeatured',
       year: 'year',
-      images: 'images',
       media: 'images.0',
+      // Previews can't read a whole array, so check the first few images one by one.
+      image0: 'images.0.asset',
+      image1: 'images.1.asset',
+      image2: 'images.2.asset',
+      image3: 'images.3.asset',
     },
     // The third line shows in the bigger "detail" rows: a quick summary without opening it.
-    prepare: ({title, category, isFeatured, year, images, media}) => {
-      const imageCount = Array.isArray(images) ? images.length : 0
-      const facts = [
-        imageCount === 1 ? '1 image' : `${imageCount} images`,
-        year,
-        isFeatured ? 'On the home page' : null,
-      ]
+    prepare: ({title, category, year, media, image0, image1, image2, image3}) => {
+      const imageCount = [image0, image1, image2, image3].filter(Boolean).length
+      const facts = [imageCountLabel(imageCount), year]
       return {
         title: title || 'Untitled project',
         subtitle: category || 'No category yet',
@@ -121,3 +120,11 @@ export const project = defineType({
     },
   },
 })
+
+// Only the first four images are counted, so a fourth means "4 or more".
+function imageCountLabel(imageCount: number): string {
+  if (imageCount === 0) return 'No images yet'
+  if (imageCount === 1) return '1 image'
+  if (imageCount === 4) return '4+ images'
+  return `${imageCount} images`
+}

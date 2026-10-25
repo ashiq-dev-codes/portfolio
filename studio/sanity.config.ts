@@ -5,11 +5,12 @@ import {withAutoSlug} from './actions/auto-slug-publish-action'
 import {StudioIcon} from './components/studio-icon'
 import {setDarkSchemeAsDefault} from './lib/default-dark-scheme'
 import {schemaTypes} from './schemaTypes'
-import {profileId, structure} from './structure'
-import {projectInCategoryTemplate} from './templates'
+import {homePageId, profileId, structure} from './structure'
 
 const siteUrl = 'https://sifna.web.app'
 const typesWithSlug = ['project', 'category']
+const singletonIds = [profileId, homePageId]
+const singletonTypes = ['profile', 'homePage']
 
 setDarkSchemeAsDefault()
 
@@ -35,11 +36,9 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
-    // No "new profile", so there is only ever one.
-    templates: (templates) => [
-      ...templates.filter((template) => template.schemaType !== 'profile'),
-      projectInCategoryTemplate,
-    ],
+    // No "new profile" or "new home page", so there is only ever one of each.
+    templates: (templates) =>
+      templates.filter((template) => !singletonTypes.includes(template.schemaType)),
   },
 
   document: {
@@ -48,8 +47,8 @@ export default defineConfig({
       options.filter((option) => option.templateId === 'project' || option.templateId === 'category'),
 
     actions: (actions, context) => {
-      // The profile can be edited and published, but never deleted or duplicated.
-      if (context.documentId === profileId) {
+      // Single documents can be edited and published, but never deleted or duplicated.
+      if (context.documentId && singletonIds.includes(context.documentId)) {
         return actions.filter((action) => action.action === 'publish' || action.action === 'discardChanges')
       }
       if (!typesWithSlug.includes(context.schemaType)) return actions
