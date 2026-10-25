@@ -1,0 +1,60 @@
+{
+  // Run and Debug panel (⇧⌘D): pick a configuration and press F5.
+  // Each app has its own port, so they can all run at the same time.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Sifna: site",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/sifna",
+      "program": "${workspaceFolder}/apps/sifna/node_modules/next/dist/bin/next",
+      "args": ["dev", "--port", "3000"],
+      "runtimeArgs": ["--inspect"],
+      "skipFiles": ["<node_internals>/**"],
+      "serverReadyAction": {
+        "action": "debugWithChrome",
+        "killOnServerStop": true,
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "webRoot": "${workspaceFolder}/apps/sifna"
+      }
+    },
+    {
+      "name": "Ashiq: site",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/ashiq",
+      "program": "${workspaceFolder}/apps/ashiq/node_modules/next/dist/bin/next",
+      "args": ["dev", "--port", "3001"],
+      "runtimeArgs": ["--inspect"],
+      "skipFiles": ["<node_internals>/**"],
+      "serverReadyAction": {
+        "action": "debugWithChrome",
+        "killOnServerStop": true,
+        "pattern": "- Local:.+(https?://.+)",
+        "uriFormat": "%s",
+        "webRoot": "${workspaceFolder}/apps/ashiq"
+      }
+    },
+    {
+      "name": "Sifna: Sanity Studio",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/studio",
+      "command": "npm run dev",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "(https?://localhost:\\d+)",
+        "uriFormat": "%s"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Sifna: site + Studio",
+      "configurations": ["Sifna: site", "Sifna: Sanity Studio"],
+      "stopAll": true
+    }
+  ]
+}

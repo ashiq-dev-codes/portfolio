@@ -44,7 +44,7 @@ portfolio/
 ├── apps/
 │   ├── sifna/      # Next.js site, content from Sanity
 │   └── ashiq/      # Next.js site, content in code
-└── studio/         # Sanity Studio, where Sifna edits her work (not created yet)
+└── studio/         # Sanity Studio, where Sifna edits her work (project dfjdl2zn)
 ```
 
 Each app is its own npm project with its own `node_modules`. There are no npm workspaces.
@@ -100,9 +100,19 @@ apps/<app>/
 - **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS 4**.
 - This Next.js version has breaking changes from older tutorials and training data. Before using an API, read its guide in `apps/<app>/node_modules/next/dist/docs/`.
 - **Sanity** (free plan) holds Sifna's projects and images. It is fetched at **build time** only.
-- **Hosting**: Cloudflare Pages, one project per app, built from this repo (not set up yet).
-  - Root directory `apps/<app>`, build command `npm run build`, output folder `out`.
-  - When Sifna publishes in Sanity, a webhook calls the Cloudflare deploy hook to rebuild her site.
+- **Hosting**: Firebase Hosting (Spark plan), one project `portfolio-as-11` with one site per app.
+  - Ashiq: https://ashiq.web.app (site `ashiq`). Sifna: https://sifna.web.app (site `sifna`).
+  - Each app has its own `firebase.json` naming its site, and uploads the `out/` folder.
+  - The project belongs to Ashiq's personal account `ashiq.dev.codes@gmail.com`, never his company one.
+  - Deploy with `npm run build` then `firebase deploy --only hosting` inside `apps/<app>`, and only
+    when Ashiq asks.
+  - Sifna's site also deploys from GitHub Actions ([deploy-sifna.yml](.github/workflows/deploy-sifna.yml)):
+    on a Sanity webhook when she publishes, on pushes to `main` that touch `apps/sifna`, or by hand.
+    It signs in to Google without a key (Workload Identity Federation, pool `github`, provider
+    `portfolio-repo`), as `github-deployer@portfolio-as-11.iam.gserviceaccount.com`, which may only
+    manage Hosting and only for this repo's `main` branch.
+  - Google tools (Firebase CLI, gcloud) use `ashiq.dev.codes@gmail.com`; pass `--account` on every
+    command and leave the company account as the gcloud default.
 - Server code needed later (like an AI demo on Ashiq's site) goes in a Cloudflare Worker, not in Next.js.
 
 ## Static export
@@ -229,7 +239,9 @@ In a long file, a one-line separator marks where each group in the [order above]
 ## Dependencies
 
 - Don't add a package without asking. First check whether Next.js, React, the browser or an installed package already does the job.
-- Planned packages: `motion` (both apps), and `next-sanity` with `@sanity/image-url` (Sifna). Anything else, ask first.
+- Planned packages: `motion` (both apps), and `@sanity/client` (Sifna). Anything else, ask first.
+  - Not `next-sanity`: it pulls in the whole Studio, and its live preview can't run in a static export.
+  - Not `@sanity/image-url`: GROQ returns image URLs, and a `next/image` loader adds the size.
 - Install inside the app folder (`apps/<app>`); each app has its own `package.json`.
 - Never hand-edit `package-lock.json`. Commit it whenever it changes.
 
