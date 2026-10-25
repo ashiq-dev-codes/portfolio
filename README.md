@@ -14,7 +14,7 @@ Both sites are free to run: no paid plan or card is needed for any part of the s
 - [Next.js 16](https://nextjs.org) (App Router), TypeScript and Tailwind CSS 4
 - Static export (`output: "export"`): every site builds to plain HTML, CSS and JS
 - [Sanity](https://www.sanity.io) for Sifna's projects and images
-- [Cloudflare Pages](https://pages.cloudflare.com) for hosting, one project per site
+- [Firebase Hosting](https://firebase.google.com/docs/hosting) for Ashiq's site, [Cloudflare Pages](https://pages.cloudflare.com) planned for Sifna's
 
 ## Structure
 
@@ -46,10 +46,23 @@ npm run dev          # http://localhost:3000
 
 ## Deploy
 
+### Ashiq's site (Firebase Hosting)
+
+Firebase project `portfolio-as-11`, owned by `ashiq.dev.codes@gmail.com`. The config is in [apps/ashiq/firebase.json](apps/ashiq/firebase.json).
+
+```bash
+cd apps/ashiq
+firebase login:list               # must show ashiq.dev.codes@gmail.com for this folder
+npm run build
+firebase deploy --only hosting
+```
+
+### Sifna's site (Cloudflare Pages)
+
 Not set up yet. The plan:
 
-1. Each app is a Cloudflare Pages project connected to this repo, with root directory `apps/<app>`, build command `npm run build` and output folder `out`.
-2. Build watch paths are limited to each app's folder, so a change to one site doesn't rebuild the other.
+1. A Cloudflare Pages project connected to this repo, with root directory `apps/sifna`, build command `npm run build` and output folder `out`.
+2. Build watch paths are limited to her app's folder, so a change to Ashiq's site doesn't rebuild hers.
 3. When Sifna publishes in Sanity, a webhook calls the Cloudflare deploy hook and her site rebuilds.
 
 ## For contributors and AI agents

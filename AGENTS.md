@@ -100,9 +100,12 @@ apps/<app>/
 - **Next.js 16** (App Router) + **TypeScript** + **Tailwind CSS 4**.
 - This Next.js version has breaking changes from older tutorials and training data. Before using an API, read its guide in `apps/<app>/node_modules/next/dist/docs/`.
 - **Sanity** (free plan) holds Sifna's projects and images. It is fetched at **build time** only.
-- **Hosting**: Cloudflare Pages, one project per app, built from this repo (not set up yet).
-  - Root directory `apps/<app>`, build command `npm run build`, output folder `out`.
-  - When Sifna publishes in Sanity, a webhook calls the Cloudflare deploy hook to rebuild her site.
+- **Hosting**: each app builds to `out/` with `npm run build`, run inside `apps/<app>`.
+  - **Ashiq**: Firebase Hosting (Spark plan), project `portfolio-as-11`, config in `apps/ashiq/firebase.json`.
+    It belongs to Ashiq's personal account `ashiq.dev.codes@gmail.com`, never his company one.
+    Deploy with `firebase deploy --only hosting` from `apps/ashiq`, and only when Ashiq asks.
+  - **Sifna**: Cloudflare Pages (not set up yet). When she publishes in Sanity, a webhook calls the
+    Cloudflare deploy hook to rebuild her site.
 - Server code needed later (like an AI demo on Ashiq's site) goes in a Cloudflare Worker, not in Next.js.
 
 ## Static export
