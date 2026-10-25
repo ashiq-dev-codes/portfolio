@@ -14,11 +14,13 @@ Ashiq is the only developer, and he is learning Next.js with this repo. Explain 
 ## Golden rules
 
 1. **The experience comes first: super friendly, super attractive, full of motion.** These are portfolios, and visitors decide in the first few seconds whether to stay. Every page must look polished, be easy to use and come alive with smooth, purposeful animation. A page that works but looks plain is not done. See [UI and motion](#ui-and-motion).
-2. **Free plans only.** No service, feature or package that needs a paid plan or a card.
-3. **Static export only.** Every app must build to plain static files (see [Static export](#static-export)).
-4. **Keep the code simple.** A rich experience doesn't need clever code. Small components, clear names. No shared packages, monorepo tools or abstractions until two apps really need the same code.
-5. **Change only what the task needs.** No drive-by refactors, renames or reformatting.
+2. **Follow the existing pattern.** Before writing code, open a similar page or component and copy its structure, naming and style. Consistency beats cleverness.
+3. **Keep the code simple.** A rich experience doesn't need clever code. Small components, clear names. No new base classes, wrappers or helpers until a third place needs them, and no shared packages or monorepo tools until both apps really need the same code.
+4. **Reuse before you add.** Check `ui/components/`, the domain functions and the installed packages before writing a new component or helper, or adding a package.
+5. **Change only what the task needs.** No drive-by refactors, renames or reformatting of unrelated code.
 6. **Don't guess.** If a requirement, design choice or content field is unclear, ask.
+7. **Free plans only.** No service, feature or package that needs a paid plan or a card.
+8. **Static export only.** Every app must build to plain static files (see [Static export](#static-export)).
 
 ## Folder rules
 
@@ -159,12 +161,77 @@ Rules that keep motion smooth instead of annoying:
 
 ## Code style
 
-- Match the file you're in and the Next.js template's style.
-- One component per file for anything reused; small private pieces can stay in the same file.
-- Names say what a thing is: `projectSlug`, not `data` or `item`. Booleans read as a question: `isFeatured`, `hasGallery`.
-- TypeScript: no `any`, and no `!` non-null assertions. Handle missing values with `?.`, `??` or an early return.
-- Comments explain *why*, never *what*, in one short line. No section-label comments in short files, and no commented-out code.
-- Delete unused code, imports and files in the same change.
+Write code a new teammate can read top to bottom and change without fear. Simple beats clever, clear beats short. Match the file you're in and the Next.js template's formatting.
+
+### Simple
+
+- **One job per file, component and function.** When a file starts doing a second job, split it into a new file instead of growing it.
+- Keep functions short (about 30 lines) and components small. Move a part of a component into its own component (a small private one at the bottom of the file, or its own file if it grows or is reused), not a `renderThing()` function.
+- Return early instead of nesting. More than 3 levels of `if`, loops or ternaries means the code needs splitting. No nested ternaries in JSX.
+- Names say what a thing is: `projectSlug`, not `data`, `item` or `temp`. Booleans read as a yes/no question: `isFeatured`, `hasGallery`, `canPlay`.
+- Use plain code: union types, `switch`, small functions. No class hierarchies, higher-order components, clever generics or utility types until a third place needs them.
+- Give repeated or unclear numbers and strings a name (`const maxFeaturedProjects = 6;`) instead of copying the raw value around.
+
+### Ordered
+
+Keep the same order in every file, so things are where a reader expects them:
+
+1. `"use client"` if the file needs it, then imports: React and Next.js, then packages, then `@/` imports.
+2. The props type of the main component.
+3. The file's main export, named after the file.
+4. Small private components and helpers used only by that export, at the bottom.
+
+Inside a component:
+
+1. Hooks (state, refs, context), then values derived from props and state.
+2. Effects.
+3. Event handlers, in the order they're used.
+4. Early returns (after all hooks), then the JSX.
+
+### Comments
+
+- Comments explain *why*, never *what*. Comment only where the reason isn't obvious from the code; prefer one short line.
+- Keep each comment line under 100 characters and each comment block under 4 lines.
+- A `/** */` doc comment on an exported function or type only when its name can't say enough (like what it returns when content is missing).
+- No comments that repeat a name, and no commented-out code.
+
+### Section separators
+
+In a long file, a one-line separator marks where each group in the [order above](#ordered) starts, so a reader can jump straight to it:
+
+```ts
+// ------------------- PRIVATE COMPONENTS -------------------
+```
+
+- Use them only when a file has about 150+ lines **and** at least two groups with several members each. Never in short files, and never around a single function.
+- Exactly this format: one line, `// ` + 19 dashes + a space, the group name in CAPITALS, a space + 19 dashes. No blank `// ---` lines above or below, and no other banner styles.
+- Use plain group names: `TYPES`, `PRIVATE COMPONENTS`, `PRIVATE HELPERS`, `MAPPERS`, `QUERIES`.
+- If a file needs many separators to be readable, it's doing too many jobs: split it instead.
+
+### Safe
+
+- **No `any`, and no `!` non-null assertions** (like `project!.title`). Use `?.` and `??` with a sensible fallback, or check first and return early. Don't add new ones in code you touch either.
+- No `as` casts to silence the compiler. Fix the type, or check the value in the mapper.
+- Clean up what you start: an effect that adds a listener, observer, timer or subscription returns a cleanup function that removes it.
+- Never swallow an error silently. If content can't be fetched at build time, let the build fail: the last good deploy stays live, which is better than publishing an empty site.
+- Don't read `window`, `localStorage`, `Date.now()` or random values while rendering. The HTML is built ahead of time, so the browser would render something different (a hydration error). Read them in an effect.
+- Prefer `const`. No mutable module-level state.
+- Don't leave `console.log` in committed code.
+
+### Future-proof
+
+- **Keep CMS values raw; convert them in the mapper.** A category or type that arrives as a string stays a `string` in the raw type. The mapper turns it into a domain union type, with a fallback for values it doesn't know, so a new category added in Sanity never breaks the build.
+- Switch on union types with every case listed and no `default`, and give the function an explicit return type. Adding a value then makes TypeScript point at every place to update.
+- Code talks to the layer below through its interface (`ProjectRepository`), never the implementation class. Only `infrastructure/repositories.ts` names the implementations.
+- Put a value or rule in one place and read it from there. If you're about to copy logic a second time, check whether it already exists first.
+- Don't leave unused code behind: delete dead functions, props, imports and files in the same change.
+
+## Dependencies
+
+- Don't add a package without asking. First check whether Next.js, React, the browser or an installed package already does the job.
+- Planned packages: `motion` (both apps), and `next-sanity` with `@sanity/image-url` (Sifna). Anything else, ask first.
+- Install inside the app folder (`apps/<app>`); each app has its own `package.json`.
+- Never hand-edit `package-lock.json`. Commit it whenever it changes.
 
 ## Run and check
 
@@ -182,9 +249,12 @@ Run commands inside the app folder (`apps/sifna` or `apps/ashiq`):
 
 ## Before you finish
 
+- The change matches an existing example and sits in the right [layer](#architecture), with no layer importing one it shouldn't.
+- New code follows [Code style](#code-style): small, ordered, short *why* comments.
+- No new `any`, `!` non-null assertions, silencing `as` casts or `console.log`.
 - `npm run build` and `npm run lint` pass in every app you changed.
 - No feature from the [Static export](#static-export) list, and nothing that needs a paid plan.
-- New code sits in the right [layer](#architecture), and no layer imports one it shouldn't.
 - Pages look polished and animate smoothly at phone width and on desktop, with reduced motion respected.
 - Sifna's work comes from Sanity, not from code.
+- You ran the affected pages with `npm run dev`, or said clearly that you didn't.
 - You explained the change to Ashiq in plain words.
