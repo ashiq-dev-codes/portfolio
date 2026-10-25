@@ -1,80 +1,106 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {WorkIcon} from '../components/icons'
+import {newProjectOrder} from '../lib/new-project-order'
 
 export const project = defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
+  icon: WorkIcon,
+  // Tabs keep the phone screen short: what she fills in every time comes first.
+  groups: [
+    {name: 'main', title: 'Main', default: true},
+    {name: 'details', title: 'Details'},
+    {name: 'settings', title: 'Settings'},
+  ],
+  initialValue: async (_params, {getClient}) => ({
+    isFeatured: false,
+    order: await newProjectOrder(getClient),
+  }),
   fields: [
     defineField({
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Link name',
-      type: 'slug',
-      description: 'Used in the page address. Click "Generate".',
-      options: {source: 'title'},
-      validation: (rule) => rule.required(),
+      group: 'main',
+      validation: (rule) => rule.required().error('Give the project a name.'),
     }),
     defineField({
       name: 'category',
       title: 'Category',
       type: 'reference',
       to: [{type: 'category'}],
-      validation: (rule) => rule.required(),
+      group: 'main',
+      options: {disableNew: true},
+      validation: (rule) => rule.required().error('Pick a category.'),
     }),
     defineField({
       name: 'images',
       title: 'Images',
       type: 'array',
-      description: 'The first image is the cover. Drag to reorder.',
+      group: 'main',
+      description: 'The first image is the cover. Hold and drag to reorder.',
       of: [
         defineArrayMember({
           type: 'image',
           fields: [
             defineField({
               name: 'alt',
-              title: 'Image description',
+              title: 'What is in the image?',
               type: 'string',
-              description: 'What is in the image, for people who cannot see it.',
+              description: 'Optional. Helps people who can’t see the image.',
             }),
           ],
         }),
       ],
       options: {layout: 'grid'},
-      validation: (rule) => rule.required().min(1),
+      validation: (rule) => rule.required().min(1).error('Add at least one image.'),
+    }),
+    defineField({
+      name: 'isFeatured',
+      title: 'Show on the home page',
+      type: 'boolean',
+      group: 'main',
+      initialValue: false,
     }),
     defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
       rows: 4,
+      group: 'details',
       description: 'Optional. The brief, the idea or the client.',
     }),
     defineField({
       name: 'year',
       title: 'Year',
       type: 'number',
+      group: 'details',
       validation: (rule) => rule.integer().min(2000).max(2100),
     }),
     defineField({
-      name: 'isFeatured',
-      title: 'Show on the home page',
-      type: 'boolean',
-      initialValue: false,
+      name: 'slug',
+      title: 'Link name',
+      type: 'slug',
+      group: 'settings',
+      description: 'Filled in from the title when you publish. Only change it if you need to.',
+      options: {source: 'title'},
     }),
     defineField({
       name: 'order',
       title: 'Order',
       type: 'number',
-      description: 'Optional. Lower numbers show first; empty ones go last.',
+      group: 'settings',
+      description: 'Lower numbers show first. New projects get the lowest one automatically.',
     }),
   ],
   orderings: [{title: 'Order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
   preview: {
-    select: {title: 'title', subtitle: 'category.title', media: 'images.0'},
+    select: {title: 'title', category: 'category.title', isFeatured: 'isFeatured', media: 'images.0'},
+    prepare: ({title, category, isFeatured, media}) => ({
+      title: title || 'Untitled project',
+      subtitle: `${category || 'No category yet'}${isFeatured ? ' · On the home page' : ''}`,
+      media,
+    }),
   },
 })
