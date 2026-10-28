@@ -13,7 +13,7 @@ Ashiq is the only developer, and he is learning Next.js with this repo. Explain 
 
 ## Golden rules
 
-1. **The experience comes first: super friendly, super attractive, full of motion.** These are portfolios, and visitors decide in the first few seconds whether to stay. Every page must look polished, be easy to use and come alive with smooth, purposeful animation. A page that works but looks plain is not done. See [UI and motion](#ui-and-motion).
+1. **The experience comes first: super friendly, super attractive, super responsive, full of motion.** These are portfolios, and visitors decide in the first few seconds whether to stay. Every page must look polished, be easy to use, fit every screen size, react instantly and come alive with smooth, purposeful animation. A page that works but looks plain is not done. See [UI and motion](#ui-and-motion).
 2. **Follow the existing pattern.** Before writing code, open a similar page or component and copy its structure, naming and style. Consistency beats cleverness.
 3. **Keep the code simple.** A rich experience doesn't need clever code. Small components, clear names. No new base classes, wrappers or helpers until a third place needs them, and no shared packages or monorepo tools until both apps really need the same code.
 4. **Reuse before you add.** Check `ui/components/`, the domain functions and the installed packages before writing a new component or helper, or adding a package.
@@ -143,6 +143,16 @@ If a feature seems to need one of these, stop and ask.
 - Images and work are shown large and sharp. Empty space is part of the design.
 - Small details count: smooth corners, subtle shadows and borders, and consistent icon style.
 
+### Responsive
+
+Every page fits every screen size and reacts instantly:
+
+- **Mobile first.** Most visitors open a portfolio link on their phone. Write the base Tailwind classes for phones, then add `sm:`, `md:` and `lg:` for bigger screens.
+- **Every size:** check every page, and every animation, from a small phone (320px) through tablet to a wide desktop. No horizontal scrolling, nothing cut off, and no lines of text so long they're hard to read.
+- Use fluid layouts (`flex`, `grid` with `auto-fit`, `max-w-*`, percentages), not fixed pixel widths. Galleries change their column count with the screen.
+- Text and spacing scale with the screen: bigger headings and more space on desktop, never tiny text on phones.
+- **Instant:** every click and tap shows a reaction right away (pressed or loading state). Use `next/link` for internal links so pages are prefetched and open without waiting.
+
 ### Motion
 
 Every page should feel alive:
@@ -162,7 +172,6 @@ Rules that keep motion smooth instead of annoying:
 
 ### Fast and accessible
 
-- **Mobile first.** Most visitors open a portfolio link on their phone. Check every page, and every animation, at phone width.
 - Pages must load fast and keep client JavaScript small.
 - Images: serve them at the size each layout needs, set width and height (or an aspect ratio) so the layout doesn't jump while they load, and lazy-load everything below the fold. Only the first visible image loads eagerly.
 - Components are Server Components by default. Add `"use client"` only when a component needs state, effects or browser APIs, and keep that component small.
@@ -266,7 +275,7 @@ Run commands inside the app folder (`apps/sifna` or `apps/ashiq`):
 - No new `any`, `!` non-null assertions, silencing `as` casts or `console.log`.
 - `npm run build` and `npm run lint` pass in every app you changed.
 - No feature from the [Static export](#static-export) list, and nothing that needs a paid plan.
-- Pages look polished and animate smoothly at phone width and on desktop, with reduced motion respected.
+- Pages look polished and animate smoothly from a small phone to a wide desktop, with reduced motion respected.
 - Sifna's work comes from Sanity, not from code.
 - You ran the affected pages with `npm run dev`, or said clearly that you didn't.
 - You explained the change to Ashiq in plain words.
