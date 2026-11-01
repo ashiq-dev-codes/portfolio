@@ -4,6 +4,7 @@ import { categoryProjection, mapCategory, type RawCategory } from "@/infrastruct
 import { imageProjection, mapImage, type RawImage } from "@/infrastructure/sanity/image-mapper";
 
 export type RawProject = {
+  _id?: string | null;
   title?: string | null;
   slug?: string | null;
   category?: RawCategory | null;
@@ -14,6 +15,7 @@ export type RawProject = {
 };
 
 export const projectProjection = `{
+  _id,
   title,
   "slug": slug.current,
   "category": category->${categoryProjection},
@@ -27,7 +29,7 @@ const untitled = "Untitled project";
 
 /**
  * Returns null for a project that can't be shown yet: no link name, category or image.
- * `position` is its place in the list Sifna drags into order in Studio (0 = first).
+ * `position` is its place in the order Sifna published from Studio (0 = first).
  */
 export function mapProject(raw: RawProject, position: number): Project | null {
   const title = raw.title?.trim() || untitled;

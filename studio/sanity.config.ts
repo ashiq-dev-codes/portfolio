@@ -11,7 +11,7 @@ import {homePageId, profileId, structure} from './structure'
 const siteUrl = 'https://sifna.web.app'
 const typesWithSlug = ['project', 'category']
 const singletonIds = [profileId, homePageId]
-const singletonTypes = ['profile', 'homePage']
+const singletonTypes = ['profile', 'homePage', 'workOrder']
 
 setDarkSchemeAsDefault()
 

@@ -1,6 +1,7 @@
 import type {StructureResolver} from 'sanity/structure'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
-import {CategoryIcon, ProfileIcon, StarIcon, WorkIcon} from './components/icons'
+import {CategoryIcon, ProfileIcon, PublishOrderIcon, StarIcon, WorkIcon} from './components/icons'
+import {PublishOrderPane} from './components/publish-order/publish-order-pane'
 
 // Single documents: Sifna opens them directly instead of picking from a list.
 export const profileId = 'profile'
@@ -17,6 +18,12 @@ export const structure: StructureResolver = (S, context) =>
     .items([
       // Every work, in the order the site shows them: hold and drag to reorder.
       orderableDocumentListDeskItem({type: 'project', title: 'My work', icon: WorkIcon, S, context}),
+      // Dragging changes the order in Studio only; this screen sends it to the website.
+      S.listItem()
+        .title('Publish order')
+        .id('publishOrder')
+        .icon(PublishOrderIcon)
+        .child(S.component(PublishOrderPane).id('publishOrderPane').title('Publish order')),
       S.listItem()
         .title('On the home page')
         .id(homePageId)

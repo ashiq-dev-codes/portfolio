@@ -13,6 +13,15 @@ export function WorkIcon() {
   )
 }
 
+export function PublishOrderIcon() {
+  return (
+    <Outline>
+      <path d="M8.5 19.5v-12M5.5 10.5l3-3 3 3" />
+      <path d="M16.5 5.5v12M13.5 14.5l3 3 3-3" />
+    </Outline>
+  )
+}
+
 export function StarIcon() {
   return (
     <Outline>
