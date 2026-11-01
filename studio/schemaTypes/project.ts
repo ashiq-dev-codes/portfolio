@@ -82,9 +82,6 @@ export const project = defineType({
       description: 'Filled in from the title when you publish. Only change it if you need to.',
       options: {source: 'title'},
     }),
-    // Replaced by drag and drop (orderRank). Hidden, not removed, until the old values are
-    // cleared from Sanity, so Studio doesn't warn about an unknown field in the meantime.
-    defineField({name: 'order', type: 'number', hidden: true}),
   ],
   orderings: [orderRankOrdering],
   preview: {
