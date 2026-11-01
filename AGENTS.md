@@ -249,6 +249,8 @@ In a long file, a one-line separator marks where each group in the [order above]
 
 - Don't add a package without asking. First check whether Next.js, React, the browser or an installed package already does the job.
 - Planned packages: `motion` (both apps), and `@sanity/client` (Sifna). Anything else, ask first.
+  - Studio also has `@sanity/orderable-document-list` (drag-and-drop order of works) and
+    `lexorank` (the rank format it stores, used by the Move to top/bottom actions).
   - Not `next-sanity`: it pulls in the whole Studio, and its live preview can't run in a static export.
   - Not `@sanity/image-url`: GROQ returns image URLs, and a `next/image` loader adds the size.
 - Install inside the app folder (`apps/<app>`); each app has its own `package.json`.

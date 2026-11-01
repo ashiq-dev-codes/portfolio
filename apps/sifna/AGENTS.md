@@ -18,6 +18,7 @@ Rules for this app only. The rules for both apps, including the architecture, ar
 - Sanity code lives in `infrastructure/sanity/`: the client, the GROQ queries, the repository implementations (`SanityProjectRepository`, ...) and the mappers.
 - Fetch at build time only. Her changes go live when the Sanity webhook triggers a rebuild.
 - Every build must read Sanity fresh. Next.js saves server `fetch` responses in `.next/cache/fetch-cache` and reuses them in later builds, so the `prebuild` script deletes that folder first. Without it, a local build can ship old content (it once dropped her new photo). Don't remove it.
+- Works appear in the order Sifna sets in Studio (drag and drop, or Move to top/bottom), stored as `orderRank`. Sort projects by it in GROQ (`order(orderRank asc)`); never add another ordering field or sort by title or date.
 - Every project page is a dynamic route, so it needs `generateStaticParams()` that returns all project slugs from the project repository.
 - The mappers treat every Sanity field except the slug as possibly empty. A missing description or gallery must not break the build or the page.
 - When the site needs a new content field, add it to the schema in `studio/` first, then to the mapper and the domain type.

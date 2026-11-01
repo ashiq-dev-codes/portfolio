@@ -1,4 +1,5 @@
 import type {StructureResolver} from 'sanity/structure'
+import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
 import {CategoryIcon, ProfileIcon, StarIcon, WorkIcon} from './components/icons'
 
 // Single documents: Sifna opens them directly instead of picking from a list.
@@ -10,20 +11,12 @@ const byOrder = [{field: 'order', direction: 'asc' as const}]
 // "detail" rows show a bigger cover and three lines of text: easier to see and tap on a phone.
 const listLayout = 'detail'
 
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Sifna’s portfolio')
     .items([
-      // Every project, newest first: where she adds and edits her posters, mockups and logos.
-      S.listItem()
-        .title('My work')
-        .icon(WorkIcon)
-        .child(
-          S.documentTypeList('project')
-            .title('My work')
-            .defaultOrdering(byOrder)
-            .defaultLayout(listLayout),
-        ),
+      // Every work, in the order the site shows them: hold and drag to reorder.
+      orderableDocumentListDeskItem({type: 'project', title: 'My work', icon: WorkIcon, S, context}),
       S.listItem()
         .title('On the home page')
         .id(homePageId)

@@ -4,14 +4,15 @@ import type { ProjectRepository } from "@/domain/project/project-repository";
 import { mapProject, projectProjection, type RawProject } from "@/infrastructure/sanity/project-mapper";
 import { sanityClient } from "@/infrastructure/sanity/sanity-client";
 
-const projectsQuery = `*[_type == "project"]${projectProjection}`;
+// orderRank is the position Sifna sets by dragging works in Studio's "My work" list.
+const projectsQuery = `*[_type == "project"] | order(orderRank asc)${projectProjection}`;
 
 export class SanityProjectRepository implements ProjectRepository {
   // cache() shares one fetch between the metadata and page of the same render.
   getAll = cache(async (): Promise<Project[]> => {
     const rawProjects = await sanityClient.fetch<RawProject[]>(projectsQuery);
     const projects = rawProjects
-      .map(mapProject)
+      .map((rawProject, position) => mapProject(rawProject, position))
       .filter((project): project is Project => project !== null);
     return sortProjects(projects);
   });

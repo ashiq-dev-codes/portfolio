@@ -11,7 +11,6 @@ export type RawProject = {
   description?: string | null;
   year?: number | null;
   isFeatured?: boolean | null;
-  order?: number | null;
 };
 
 export const projectProjection = `{
@@ -21,14 +20,16 @@ export const projectProjection = `{
   "images": images[]${imageProjection},
   description,
   year,
-  "isFeatured": _id in *[_id == "homePage"][0].featuredProjects[]._ref,
-  order
+  "isFeatured": _id in *[_id == "homePage"][0].featuredProjects[]._ref
 }`;
 
 const untitled = "Untitled project";
 
-/** Returns null for a project that can't be shown yet: no link name, category or image. */
-export function mapProject(raw: RawProject): Project | null {
+/**
+ * Returns null for a project that can't be shown yet: no link name, category or image.
+ * `position` is its place in the list Sifna drags into order in Studio (0 = first).
+ */
+export function mapProject(raw: RawProject, position: number): Project | null {
   const title = raw.title?.trim() || untitled;
   const category = raw.category ? mapCategory(raw.category) : null;
   const images = (raw.images ?? [])
@@ -46,6 +47,6 @@ export function mapProject(raw: RawProject): Project | null {
     description: raw.description?.trim() || null,
     year: raw.year ?? null,
     isFeatured: raw.isFeatured ?? false,
-    order: raw.order ?? null,
+    order: position,
   };
 }

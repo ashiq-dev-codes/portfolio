@@ -1,8 +1,8 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {orderRankField, orderRankOrdering} from '@sanity/orderable-document-list'
 import {CategoryPicker} from '../components/category-picker'
 import {WorkIcon} from '../components/icons'
 import {ImagesInput} from '../components/images-input'
-import {newProjectOrder} from '../lib/new-project-order'
 
 export const project = defineType({
   name: 'project',
@@ -15,10 +15,9 @@ export const project = defineType({
     {name: 'details', title: 'Details'},
     {name: 'settings', title: 'Settings'},
   ],
-  initialValue: async (_params, {getClient}) => ({
-    order: await newProjectOrder(getClient),
-  }),
   fields: [
+    // The position in "My work" (set by drag and drop). New works start at the top.
+    orderRankField({type: 'project', newItemPosition: 'before'}),
     defineField({
       name: 'title',
       title: 'Title',
@@ -60,9 +59,6 @@ export const project = defineType({
       components: {input: ImagesInput},
       validation: (rule) => rule.required().min(1).error('Add at least one image.'),
     }),
-    // Replaced by the "On the home page" picker. Hidden, not removed, until the old values are
-    // cleared from Sanity, so Studio doesn't warn about an unknown field in the meantime.
-    defineField({name: 'isFeatured', type: 'boolean', hidden: true}),
     defineField({
       name: 'description',
       title: 'Description',
@@ -86,15 +82,11 @@ export const project = defineType({
       description: 'Filled in from the title when you publish. Only change it if you need to.',
       options: {source: 'title'},
     }),
-    defineField({
-      name: 'order',
-      title: 'Order',
-      type: 'number',
-      group: 'settings',
-      description: 'Lower numbers show first. New projects get the lowest one automatically.',
-    }),
+    // Replaced by drag and drop (orderRank). Hidden, not removed, until the old values are
+    // cleared from Sanity, so Studio doesn't warn about an unknown field in the meantime.
+    defineField({name: 'order', type: 'number', hidden: true}),
   ],
-  orderings: [{title: 'Order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
+  orderings: [orderRankOrdering],
   preview: {
     select: {
       title: 'title',

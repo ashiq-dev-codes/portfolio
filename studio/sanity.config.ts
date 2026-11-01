@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {withAutoSlug} from './actions/auto-slug-publish-action'
+import {MoveToBottomAction, MoveToTopAction} from './actions/move-to-edge-actions'
 import {StudioIcon} from './components/studio-icon'
 import {setDarkSchemeAsDefault} from './lib/default-dark-scheme'
 import {schemaTypes} from './schemaTypes'
@@ -52,7 +53,10 @@ export default defineConfig({
         return actions.filter((action) => action.action === 'publish' || action.action === 'discardChanges')
       }
       if (!typesWithSlug.includes(context.schemaType)) return actions
-      return actions.map((action) => (action.action === 'publish' ? withAutoSlug(action) : action))
+      const withSlug = actions.map((action) => (action.action === 'publish' ? withAutoSlug(action) : action))
+      // Works also get one-tap jumps in their ⋯ menu, for long lists where dragging is slow.
+      if (context.schemaType !== 'project') return withSlug
+      return [...withSlug, MoveToTopAction, MoveToBottomAction]
     },
 
     // "Open preview" in a project's menu jumps to its live page.
