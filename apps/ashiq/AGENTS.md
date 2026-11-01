@@ -18,6 +18,9 @@ Rules for this app only. The rules for both apps, including the architecture, ar
 - Content files live in `infrastructure/content/` as typed data (`projects.ts`, `profile.ts`, ...), read through repository implementations (`ContentProjectRepository`, ...). Never write project text, links or skills inside components or pages.
 - Keep the content files shaped like a CMS would return them and map them to domain types, the same way Sifna's app maps Sanity. Moving to Sanity later should only touch `infrastructure/`.
 - Every project page is a dynamic route, so it needs `generateStaticParams()` that returns all project slugs from the project repository.
+- No phone number is ever printed on the site. WhatsApp (his Indian number) appears only as a button; the UAE number is not used at all.
+- `cvUrl` must point to a CV without phone numbers. Leave it `null` (the Download button stays hidden) until such a copy is in `public/`.
+- Only facts from his CV go in the content files. Don't invent dates, numbers or client names; leave a field empty instead.
 
 ## Design
 
