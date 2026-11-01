@@ -11,6 +11,8 @@ import {ranksInOrder, workOrderId, type Work} from '../../lib/work-order'
 
 export type PublishResult = {publishedCount: number; skippedCount: number}
 
+type Transaction = ReturnType<SanityClient['transaction']>
+
 type PublishData = {
   drafts: {doc: SanityDocument; summary: DraftSummary}[]
   publishedIds: string[]
@@ -63,22 +65,46 @@ export async function publishAll(client: SanityClient): Promise<PublishResult> {
   return {publishedCount: ready.length, skippedCount: changes.length - ready.length}
 }
 
-/**
- * Throws away every draft (new works included) and puts "My work" back in the website's order.
- * Nothing here changes the website, so nothing deploys.
- */
+// None of the undo operations change the website, so none of them deploy.
+
+/** Throws away one waiting change. For a new item, that deletes it. */
+export async function undoChange(client: SanityClient, change: PendingChange): Promise<void> {
+  await client.delete(change.draftId)
+}
+
+/** Puts "My work" back in the website's order, leaving every other change waiting. */
+export async function undoOrder(client: SanityClient, live: Work[]): Promise<void> {
+  const draftIds = await fetchDraftIds(client)
+  const transaction = client.transaction()
+  restoreOrder(transaction, live, new Set(draftIds))
+  await transaction.commit()
+}
+
+/** Throws away every waiting change (new works included) and restores the website's order. */
 export async function undoAll(client: SanityClient, live: Work[]): Promise<void> {
-  const draftIds = await client.fetch<string[]>('*[_id in path("drafts.**") && _type in $types]._id', {
-    types: publishableTypes,
-  })
-  const ranks = ranksInOrder(live.length)
+  const draftIds = await fetchDraftIds(client)
   const transaction = client.transaction()
   draftIds.forEach((draftId) => transaction.delete(draftId))
-  live.forEach((work, index) => transaction.patch(work._id, (patch) => patch.set({orderRank: ranks[index]})))
+  restoreOrder(transaction, live, new Set())
   await transaction.commit()
 }
 
 // ------------------- PRIVATE HELPERS -------------------
+
+function fetchDraftIds(client: SanityClient): Promise<string[]> {
+  return client.fetch<string[]>('*[_id in path("drafts.**") && _type in $types]._id', {types: publishableTypes})
+}
+
+// Fresh ranks in website order. A kept draft gets the same rank, since a draft's rank wins.
+function restoreOrder(transaction: Transaction, live: Work[], keptDraftIds: Set<string>) {
+  const ranks = ranksInOrder(live.length)
+  live.forEach((work, index) => {
+    const orderRank = ranks[index]
+    transaction.patch(work._id, (patch) => patch.set({orderRank}))
+    const draftId = `drafts.${work._id}`
+    if (keptDraftIds.has(draftId)) transaction.patch(draftId, (patch) => patch.set({orderRank}))
+  })
+}
 
 function byPublishSequence(first: PendingChange, second: PendingChange): number {
   return publishSequence.indexOf(first.type) - publishSequence.indexOf(second.type)

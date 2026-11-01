@@ -3,14 +3,16 @@ import type {SanityClient} from 'sanity'
 import {pendingChanges} from '../../lib/pending-changes'
 import {liveOrder, movedWorks} from '../../lib/work-order'
 import {ChangeList} from './change-list'
-import {publishAll, undoAll} from './publish-operations'
+import type {PendingChange} from '../../lib/pending-changes'
+import {publishAll, undoAll, undoChange, undoOrder} from './publish-operations'
 import {buttonStyle, cardStyle, colors, screenCss, type ButtonKind} from './publish-styles'
 import {usePendingChanges, type PendingData, type PendingState} from './use-pending-changes'
 
+type Job = 'publish' | 'undoAll' | 'undoOne'
+
 type Task =
   | {kind: 'idle'}
-  | {kind: 'publishing'}
-  | {kind: 'undoing'}
+  | {kind: 'working'; job: Job}
   | {kind: 'done'; message: string}
   | {kind: 'failed'; message: string}
 
@@ -52,27 +54,43 @@ function PublishEditor({data, client}: {data: PendingData; client: SanityClient}
   const moved = movedWorks(data.works, live)
   const readyCount = changes.filter((change) => !change.problem).length + (moved.length > 0 ? 1 : 0)
   const hasAnything = changes.length > 0 || moved.length > 0
-  const isBusy = task.kind === 'publishing' || task.kind === 'undoing'
+  const isBusy = task.kind === 'working'
+  const busyJob = task.kind === 'working' ? task.job : null
 
-  async function handlePublish() {
-    setTask({kind: 'publishing'})
+  // Runs one job at a time, so a second tap can't start a clashing change.
+  async function run(job: Job, operation: () => Promise<string>) {
+    setTask({kind: 'working', job})
     try {
-      const {skippedCount} = await publishAll(client)
-      setTask({kind: 'done', message: publishedMessage(skippedCount)})
+      setTask({kind: 'done', message: await operation()})
     } catch (error) {
       setTask({kind: 'failed', message: errorText(error)})
     }
   }
 
-  async function handleUndo() {
+  function handlePublish() {
+    run('publish', async () => publishedMessage((await publishAll(client)).skippedCount))
+  }
+
+  function handleUndoChange(change: PendingChange) {
+    run('undoOne', async () => {
+      await undoChange(client, change)
+      return change.isNew ? `Deleted “${change.label}”.` : `Undid your edits to “${change.label}”.`
+    })
+  }
+
+  function handleUndoOrder() {
+    run('undoOne', async () => {
+      await undoOrder(client, live)
+      return 'The order is back to what’s on your website.'
+    })
+  }
+
+  function handleUndoAll() {
     setIsConfirmingUndo(false)
-    setTask({kind: 'undoing'})
-    try {
+    run('undoAll', async () => {
       await undoAll(client, live)
-      setTask({kind: 'done', message: 'Done. Everything is back to what’s on your website.'})
-    } catch (error) {
-      setTask({kind: 'failed', message: errorText(error)})
-    }
+      return 'Done. Everything is back to what’s on your website.'
+    })
   }
 
   return (
@@ -80,22 +98,28 @@ function PublishEditor({data, client}: {data: PendingData; client: SanityClient}
       <Summary hasAnything={hasAnything} waitingCount={changes.length + (moved.length > 0 ? 1 : 0)} publishedAt={data.publishedAt} />
       {hasAnything && (
         <div style={{marginTop: 14}}>
-          <ChangeList changes={changes} movedWorks={moved} />
+          <ChangeList
+            changes={changes}
+            movedWorks={moved}
+            isBusy={isBusy}
+            onUndoChange={handleUndoChange}
+            onUndoOrder={handleUndoOrder}
+          />
         </div>
       )}
       <div style={{display: 'grid', gap: 10, marginTop: 16}}>
         <ActionButton kind="primary" isDisabled={readyCount === 0 || isBusy} onClick={handlePublish}>
-          {task.kind === 'publishing' ? 'Publishing…' : publishLabel(readyCount)}
+          {busyJob === 'publish' ? 'Publishing…' : publishLabel(readyCount)}
         </ActionButton>
         {hasAnything && !isConfirmingUndo && (
           <ActionButton kind="secondary" isDisabled={isBusy} onClick={() => setIsConfirmingUndo(true)}>
-            {task.kind === 'undoing' ? 'Undoing…' : 'Undo all changes'}
+            {busyJob === 'undoAll' ? 'Undoing…' : 'Undo all changes'}
           </ActionButton>
         )}
         {isConfirmingUndo && (
           <UndoConfirm
             newCount={changes.filter((change) => change.isNew && change.type === 'project').length}
-            onConfirm={handleUndo}
+            onConfirm={handleUndoAll}
             onCancel={() => setIsConfirmingUndo(false)}
           />
         )}

@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {MoveToBottomAction, MoveToTopAction} from './actions/move-to-edge-actions'
+import {SavedStatusAction} from './actions/saved-status-action'
 import {StudioIcon} from './components/studio-icon'
 import {setDarkSchemeAsDefault} from './lib/default-dark-scheme'
 import {schemaTypes} from './schemaTypes'
@@ -48,10 +49,11 @@ export default defineConfig({
       options.filter((option) => option.templateId === 'project' || option.templateId === 'category'),
 
     actions: (actions, context) => {
-      const kept = actions.filter((action) => !removedActions.includes(action.action ?? ''))
+      // "Saved" goes first: Sanity shows the first action as the big button.
+      const kept = [SavedStatusAction, ...actions.filter((action) => !removedActions.includes(action.action ?? ''))]
       // Single documents can be edited, but never deleted or duplicated.
       if (context.documentId && singletonIds.includes(context.documentId)) {
-        return kept.filter((action) => action.action === 'discardChanges')
+        return kept.filter((action) => action === SavedStatusAction || action.action === 'discardChanges')
       }
       // Works also get one-tap jumps in their ⋯ menu, for long lists where dragging is slow.
       if (context.schemaType !== 'project') return kept
