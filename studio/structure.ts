@@ -1,7 +1,7 @@
 import type {StructureResolver} from 'sanity/structure'
 import {orderableDocumentListDeskItem} from '@sanity/orderable-document-list'
-import {CategoryIcon, ProfileIcon, PublishOrderIcon, StarIcon, WorkIcon} from './components/icons'
-import {PublishOrderPane} from './components/publish-order/publish-order-pane'
+import {CategoryIcon, ProfileIcon, PublishIcon, StarIcon, WorkIcon} from './components/icons'
+import {PublishPane} from './components/publish/publish-pane'
 
 // Single documents: Sifna opens them directly instead of picking from a list.
 export const profileId = 'profile'
@@ -16,14 +16,8 @@ export const structure: StructureResolver = (S, context) =>
   S.list()
     .title('Sifna’s portfolio')
     .items([
-      // Every work, in the order the site shows them: hold and drag to reorder.
+      // Every work, in the order she wants: hold and drag to reorder.
       orderableDocumentListDeskItem({type: 'project', title: 'My work', icon: WorkIcon, S, context}),
-      // Dragging changes the order in Studio only; this screen sends it to the website.
-      S.listItem()
-        .title('Publish order')
-        .id('publishOrder')
-        .icon(PublishOrderIcon)
-        .child(S.component(PublishOrderPane).id('publishOrderPane').title('Publish order')),
       S.listItem()
         .title('On the home page')
         .id(homePageId)
@@ -44,4 +38,11 @@ export const structure: StructureResolver = (S, context) =>
             .defaultOrdering(byOrder)
             .defaultLayout(listLayout),
         ),
+      S.divider(),
+      // Every change above waits here as a draft until she publishes them all at once.
+      S.listItem()
+        .title('Publish')
+        .id('publish')
+        .icon(PublishIcon)
+        .child(S.component(PublishPane).id('publishPane').title('Publish')),
     ])

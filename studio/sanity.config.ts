@@ -1,7 +1,6 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
-import {withAutoSlug} from './actions/auto-slug-publish-action'
 import {MoveToBottomAction, MoveToTopAction} from './actions/move-to-edge-actions'
 import {StudioIcon} from './components/studio-icon'
 import {setDarkSchemeAsDefault} from './lib/default-dark-scheme'
@@ -9,9 +8,10 @@ import {schemaTypes} from './schemaTypes'
 import {homePageId, profileId, structure} from './structure'
 
 const siteUrl = 'https://sifna.web.app'
-const typesWithSlug = ['project', 'category']
 const singletonIds = [profileId, homePageId]
 const singletonTypes = ['profile', 'homePage', 'workOrder']
+// Changes go live only from the Publish tab, so no document has its own Publish or Unpublish.
+const removedActions = ['publish', 'unpublish']
 
 setDarkSchemeAsDefault()
 
@@ -48,15 +48,14 @@ export default defineConfig({
       options.filter((option) => option.templateId === 'project' || option.templateId === 'category'),
 
     actions: (actions, context) => {
-      // Single documents can be edited and published, but never deleted or duplicated.
+      const kept = actions.filter((action) => !removedActions.includes(action.action ?? ''))
+      // Single documents can be edited, but never deleted or duplicated.
       if (context.documentId && singletonIds.includes(context.documentId)) {
-        return actions.filter((action) => action.action === 'publish' || action.action === 'discardChanges')
+        return kept.filter((action) => action.action === 'discardChanges')
       }
-      if (!typesWithSlug.includes(context.schemaType)) return actions
-      const withSlug = actions.map((action) => (action.action === 'publish' ? withAutoSlug(action) : action))
       // Works also get one-tap jumps in their ⋯ menu, for long lists where dragging is slow.
-      if (context.schemaType !== 'project') return withSlug
-      return [...withSlug, MoveToTopAction, MoveToBottomAction]
+      if (context.schemaType !== 'project') return kept
+      return [...kept, MoveToTopAction, MoveToBottomAction]
     },
 
     // "Open preview" in a project's menu jumps to its live page.

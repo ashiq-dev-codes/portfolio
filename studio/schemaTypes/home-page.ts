@@ -1,8 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {StarIcon} from '../components/icons'
-
-/** The site shows at most this many featured works on the home page. */
-const maxFeaturedWorks = 8
+import {maxFeaturedWorks} from '../lib/pending-changes'
 
 // One document that lists the works on the home page, so Sifna picks them in one place
 // instead of switching a setting inside every project.
