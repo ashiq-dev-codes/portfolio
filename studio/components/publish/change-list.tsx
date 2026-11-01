@@ -140,18 +140,18 @@ function UndoButton({isDisabled, label, onClick}: UndoButtonProps) {
   return (
     <button
       type="button"
-      className="pub-button"
+      className="pub-button pub-undo"
       aria-label={label}
-      title="Undo"
       disabled={isDisabled}
       onClick={onClick}
       style={undoButtonStyle(isDisabled)}
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
         strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M4 7v5h5" />
-        <path d="M4.5 12A8 8 0 1 0 7 6.3L4 9" />
+        <path d="M9 14 4 9l5-5" />
+        <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
       </svg>
+      Undo
     </button>
   )
 }
@@ -184,18 +184,23 @@ function Thumbnail({url, label}: {url: string | null; label: string}) {
   )
 }
 
+// A small labelled pill: the word makes it clear at a glance, the 44px height keeps it easy to tap.
 function undoButtonStyle(isDisabled: boolean): CSSProperties {
   return {
-    display: 'grid',
-    placeItems: 'center',
-    width: 44,
-    height: 44,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: 44,
+    padding: '0 14px',
     flexShrink: 0,
-    borderRadius: 10,
-    border: 'none',
+    borderRadius: 999,
+    border: '1px solid color-mix(in srgb, currentColor 20%, transparent)',
     background: 'transparent',
     color: 'inherit',
-    opacity: isDisabled ? 0.35 : 0.75,
+    font: 'inherit',
+    fontSize: 13,
+    fontWeight: 600,
+    opacity: isDisabled ? 0.4 : 0.85,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
   }
 }

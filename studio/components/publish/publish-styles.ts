@@ -53,6 +53,8 @@ export const screenCss = `
   @keyframes pub-rise { from { opacity: 0; transform: translateY(6px); } }
   .pub-button { transition: transform 150ms ease-out, opacity 150ms ease-out; }
   .pub-button:not(:disabled):active { transform: scale(0.98); }
+  .pub-undo { transition: transform 150ms ease-out, background 150ms ease-out, opacity 150ms ease-out; }
+  .pub-undo:not(:disabled):hover { background: color-mix(in srgb, currentColor 8%, transparent); opacity: 1; }
   .pub-row { transition: background 150ms ease-out, transform 150ms ease-out; }
   .pub-row:hover { background: color-mix(in srgb, currentColor 7%, transparent); }
   .pub-row:active { transform: scale(0.99); }
