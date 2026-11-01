@@ -31,7 +31,8 @@ export function ProjectCard({ project, sizes }: ProjectCardProps) {
         </div>
       </ProjectCoverTransition>
       <div className="mt-2.5 flex items-baseline justify-between gap-3 px-1 sm:mt-3">
-        <h3 className="text-sm leading-snug font-medium transition-colors group-hover:text-brand sm:text-base">
+        {/* One line, so captions stay level across a row of different-width works. */}
+        <h3 className="min-w-0 truncate text-sm leading-snug font-medium transition-colors group-hover:text-brand sm:text-base">
           {project.title}
         </h3>
         <span className="hidden shrink-0 font-mono text-xs text-muted sm:inline">
