@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { groupByKind } from "@/domain/project/project";
 import { projectRepository } from "@/infrastructure/repositories";
 import { PageTransition } from "@/ui/components/page-transition";
-import { SectionHeading } from "@/ui/components/section-heading";
+import { SectionTitle } from "@/ui/components/section-title";
 import { ProjectGroups } from "@/ui/project/project-groups";
 
 export const metadata: Metadata = {
@@ -16,8 +16,8 @@ export default async function WorkPage() {
 
   return (
     <PageTransition>
-      <section className="page-container pt-8 pb-4 sm:pt-16 sm:pb-8">
-        <SectionHeading isPageTitle eyebrow={`${projects.length} projects`} title="Work" text={workIntro} />
+      <section className="page-container pt-12 pb-4 sm:pt-20 sm:pb-8">
+        <SectionTitle isPageTitle label={`${projects.length} projects`} title="My work" text={workIntro} />
         <ProjectGroups groups={groupByKind(projects)} />
       </section>
     </PageTransition>

@@ -9,14 +9,17 @@ type ProjectGroupsProps = {
 /** The Work page body: apps, then open-source packages, then backend, each with its own grid. */
 export function ProjectGroups({ groups }: ProjectGroupsProps) {
   return (
-    <div className="mt-10 space-y-14 sm:mt-14 sm:space-y-20">
+    <div className="mt-12 space-y-16 sm:mt-16 sm:space-y-20">
       {groups.map((group) => (
         <section key={group.kind} aria-labelledby={`group-${group.kind}`}>
-          <Reveal className="mb-6 flex items-baseline gap-3 border-b border-line pb-4">
+          <Reveal className="mb-6 flex items-center gap-4">
             <h2 id={`group-${group.kind}`} className="text-2xl font-semibold tracking-tight sm:text-3xl">
               {projectKindLabel(group.kind)}
             </h2>
-            <span className="font-mono text-sm text-muted">{String(group.projects.length).padStart(2, "0")}</span>
+            <span className="h-px flex-1 bg-gradient-to-r from-white/15 to-transparent" />
+            <span className="glass grid size-8 place-items-center rounded-full text-sm text-muted">
+              {group.projects.length}
+            </span>
           </Reveal>
           <ProjectGrid projects={group.projects} />
         </section>

@@ -35,7 +35,6 @@ export const profile: RawProfile = {
     { value: "40+", label: "feature modules" },
     { value: "3", label: "packages on pub.dev" },
   ],
-  heroTags: ["flutter_bloc", "Stripe", "Bluetooth LE", "Claude Code"],
   education: [
     {
       degree: "B.Sc Computer Science",

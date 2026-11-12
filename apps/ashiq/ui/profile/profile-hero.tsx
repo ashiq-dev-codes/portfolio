@@ -1,104 +1,101 @@
-import Image from "next/image";
 import type { Profile } from "@/domain/profile/profile";
+import type { Metric, Project } from "@/domain/project/project";
 import { ButtonLink } from "@/ui/components/button-link";
+import { CountUp } from "@/ui/components/count-up";
 import { Reveal } from "@/ui/components/reveal";
-import { AvailabilityBadge } from "@/ui/profile/availability-badge";
-import { ProfilePhoto } from "@/ui/profile/profile-photo";
+import { WordReveal } from "@/ui/components/word-reveal";
+import { ProjectPhoneShowcase } from "@/ui/project/project-phone-showcase";
 
 type ProfileHeroProps = {
   profile: Profile;
+  /** The projects the hero phone plays through. */
+  showcaseProjects: Project[];
 };
 
-// Where each floating tag sits around the photo, and how far out of step it floats.
-const tagPlacements = ["-left-10 top-[12%]", "-right-8 top-[34%]", "-left-6 bottom-[22%]", "-right-10 bottom-[6%]"];
-const floatDelays = ["0s", "-1.8s", "-3.6s", "-5.4s"];
+const stepDelay = 0.08;
+const headlineAccentWords = 2;
 
-export function ProfileHero({ profile }: ProfileHeroProps) {
+/**
+ * The home hero. Text on the left; on the right an iPhone playing through the projects, with the
+ * stats floating around it as glass widgets. Phones stack it: text, phone, then the widgets.
+ */
+export function ProfileHero({ profile, showcaseProjects }: ProfileHeroProps) {
   return (
-    <section className="relative overflow-hidden">
-      <div aria-hidden="true" className="grid-backdrop pointer-events-none absolute inset-0" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-40 -right-32 size-[34rem] animate-float rounded-full bg-brand/20 blur-3xl motion-reduce:animate-none"
-      />
-      <div className="page-container relative grid items-center gap-12 pt-8 pb-10 sm:pt-16 sm:pb-16 lg:grid-cols-[1.25fr_1fr] lg:pt-24 lg:pb-24">
-        <div>
-          <Reveal className="flex items-center gap-3 lg:hidden">
-            <Image
-              src={profile.photo.url}
-              alt={profile.photo.alt}
-              width={profile.photo.width}
-              height={profile.photo.height}
-              sizes="56px"
-              preload
-              loading="eager"
-              className="size-14 rounded-full object-cover ring-2 ring-brand/60"
-            />
-            <AvailabilityBadge text={profile.availability} />
-          </Reveal>
-          <Reveal className="mt-6 hidden lg:block">
-            <AvailabilityBadge text={profile.availability} />
-          </Reveal>
-          <Reveal delay={0.06}>
-            <p className="mt-6 font-mono text-sm text-brand sm:text-base">
-              <span aria-hidden="true" className="text-muted">{"> "}</span>
-              {profile.tagline}
-              <span aria-hidden="true" className="ml-1 inline-block h-4 w-2 translate-y-0.5 animate-caret bg-brand motion-reduce:animate-none" />
-            </p>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <h1 className="mt-4 text-[2.75rem] leading-[0.98] font-semibold tracking-tight text-balance sm:text-7xl xl:text-[5.25rem]">
-              <HeadlineWithGradient headline={profile.headline} />
-            </h1>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p className="mt-6 max-w-xl text-base text-pretty text-muted sm:text-lg">{profile.intro}</p>
-          </Reveal>
-          <Reveal delay={0.24}>
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-              <ButtonLink href="/work" icon="arrow-right">
-                View work
-              </ButtonLink>
-              <ButtonLink href="#contact" variant="secondary">
-                Get in touch
-              </ButtonLink>
-            </div>
-          </Reveal>
-        </div>
-        <HeroPhoto profile={profile} />
+    <section className="page-container grid items-center gap-12 pt-10 pb-16 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-6 lg:pt-16 lg:pb-24">
+      <div className="text-center lg:text-left">
+        <Reveal>
+          <p className="glass inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm text-ink/90">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-pulse-dot rounded-full bg-online motion-reduce:animate-none" />
+              <span className="relative inline-flex size-2 rounded-full bg-online" />
+            </span>
+            {profile.availability}
+          </p>
+        </Reveal>
+        <Reveal delay={stepDelay}>
+          <p className="mt-6 text-base font-medium sm:text-lg">
+            <span className="text-accent">{profile.name}</span>
+            <span className="text-muted"> · {profile.role}</span>
+          </p>
+        </Reveal>
+        <h1 className="mt-3 text-[2.6rem] leading-[1.05] font-semibold tracking-tight text-balance sm:text-6xl xl:text-7xl">
+          <WordReveal text={profile.headline} delay={stepDelay * 2} accentWordCount={headlineAccentWords} />
+        </h1>
+        <Reveal delay={stepDelay * 5}>
+          <p className="mx-auto mt-6 max-w-xl text-base text-pretty text-muted sm:text-lg lg:mx-0">{profile.intro}</p>
+        </Reveal>
+        <Reveal
+          delay={stepDelay * 6}
+          className="mx-auto mt-8 grid w-full max-w-sm grid-cols-2 gap-3 sm:flex sm:max-w-none sm:justify-center lg:justify-start"
+        >
+          <ButtonLink href="/work" icon="arrow-right">
+            View work
+          </ButtonLink>
+          <ButtonLink href="#contact" variant="secondary">
+            Contact
+          </ButtonLink>
+        </Reveal>
+      </div>
+      <div className="relative">
+        <Reveal delay={stepDelay * 3}>
+          <ProjectPhoneShowcase projects={showcaseProjects} />
+        </Reveal>
+        <StatWidgets stats={profile.stats} />
       </div>
     </section>
   );
 }
 
-// The last two words get the brand gradient: "...people actually use."
-function HeadlineWithGradient({ headline }: { headline: string }) {
-  const words = headline.split(" ");
-  const highlightCount = 2;
-  const plain = words.slice(0, -highlightCount).join(" ");
-  const highlighted = words.slice(-highlightCount).join(" ");
-  return (
-    <>
-      {plain} <span className="text-gradient">{highlighted}</span>
-    </>
-  );
-}
+// Where each widget floats around the phone on wide screens, overlapping its edges but never its
+// Open project button; phones show them as a 2×2 grid.
+const widgetPlacements = [
+  "lg:-left-4 lg:top-[8%]",
+  "lg:-right-6 lg:top-[26%]",
+  "lg:-left-2 lg:bottom-[28%]",
+  "lg:-right-4 lg:bottom-[24%]",
+];
+const widgetStagger = 0.1;
 
-function HeroPhoto({ profile }: ProfileHeroProps) {
+function StatWidgets({ stats }: { stats: Metric[] }) {
+  if (stats.length === 0) return null;
+
   return (
-    <Reveal delay={0.2} className="relative mx-auto hidden w-full max-w-sm lg:block">
-      <ProfilePhoto photo={profile.photo} sizes="(min-width: 1024px) 384px, 0px" isPriority />
-      {profile.heroTags.slice(0, tagPlacements.length).map((tag, index) => (
-        <span
-          key={tag}
-          aria-hidden="true"
-          style={{ animationDelay: floatDelays[index] }}
-          className={`absolute ${tagPlacements[index]} animate-float rounded-full border border-line bg-surface/90 px-3.5 py-1.5 font-mono text-xs text-ink shadow-card backdrop-blur motion-reduce:animate-none`}
+    <ul className="mx-auto mt-10 grid max-w-md grid-cols-2 gap-3 lg:pointer-events-none lg:absolute lg:inset-0 lg:mt-0 lg:block lg:max-w-none">
+      {stats.map((stat, index) => (
+        <li
+          key={stat.label}
+          // Each widget bobs on its own beat, like things floating in water.
+          style={{ animationDelay: `${index * -1.5}s` }}
+          className={`lg:pointer-events-auto lg:absolute lg:w-40 lg:animate-float lg:motion-reduce:animate-none ${widgetPlacements[index] ?? ""}`}
         >
-          <span className="text-brand">#</span>
-          {tag}
-        </span>
+          <Reveal delay={0.5 + index * widgetStagger} className="liquid-glass h-full rounded-3xl px-4 py-4 text-left">
+            <p className="text-gradient text-3xl font-semibold tracking-tight sm:text-4xl">
+              <CountUp value={stat.value} />
+            </p>
+            <p className="mt-1 text-xs leading-snug text-pretty text-muted sm:text-sm">{stat.label}</p>
+          </Reveal>
+        </li>
       ))}
-    </Reveal>
+    </ul>
   );
 }

@@ -30,8 +30,6 @@ export type Profile = {
   /** A public CV without phone numbers, or null to hide the download button. */
   cvUrl: string | null;
   stats: Metric[];
-  /** A few tools shown floating around the photo on the home page. */
-  heroTags: string[];
   education: Education[];
   languages: string[];
 };

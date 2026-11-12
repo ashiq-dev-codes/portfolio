@@ -14,21 +14,25 @@ type ButtonLinkProps = {
   isDownload?: boolean;
 };
 
+// Rounded-square buttons (not pills), so they read differently from Sifna's site.
 const baseClass =
-  "group/button inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-medium " +
+  "group/button relative isolate inline-flex min-h-12 items-center justify-center gap-2 overflow-hidden " +
+  "rounded-xl px-4 font-medium whitespace-nowrap sm:px-6 " +
   "transition duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97] " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 export function ButtonLink({ href, children, variant = "primary", icon, isDownload = false }: ButtonLinkProps) {
   const className = `${baseClass} ${variantClass(variant)}`;
   const content = (
     <>
+      {/* A band of light that sweeps across on hover, like a reflection sliding over glass. */}
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 -z-10 w-1/3 -translate-x-full -skew-x-12 bg-accent/30 transition-transform duration-700 ease-out group-hover/button:translate-x-[400%] motion-reduce:hidden"
+      />
       {children}
       {icon && (
-        <Icon
-          name={icon}
-          className="size-5 transition-transform duration-200 group-hover/button:translate-x-0.5"
-        />
+        <Icon name={icon} className="size-5 transition-transform duration-200 group-hover/button:translate-x-0.5" />
       )}
     </>
   );
@@ -50,9 +54,9 @@ export function ButtonLink({ href, children, variant = "primary", icon, isDownlo
 function variantClass(variant: ButtonVariant): string {
   switch (variant) {
     case "primary":
-      return "bg-brand text-paper shadow-glow hover:brightness-110";
+      return "bg-gradient-to-b from-white to-silver text-paper shadow-glow";
     case "secondary":
-      return "border border-line bg-surface/70 text-ink backdrop-blur hover:border-brand/60 hover:bg-raised";
+      return "glass text-ink hover:border-white/25";
   }
 }
 

@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { profileRepository } from "@/infrastructure/repositories";
+import { AuroraBackground } from "@/ui/components/aurora-background";
 import { MobileNav } from "@/ui/components/mobile-nav";
 import { MotionProvider } from "@/ui/components/motion-provider";
+import { ScrollProgress } from "@/ui/components/scroll-progress";
 import { SiteFooter } from "@/ui/components/site-footer";
 import { SiteHeader } from "@/ui/components/site-header";
 import "./globals.css";
 
-const grotesk = Space_Grotesk({
-  variable: "--font-grotesk",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
 });
 
-const jetbrains = JetBrains_Mono({
-  variable: "--font-jetbrains",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -21,7 +23,7 @@ const jetbrains = JetBrains_Mono({
 // home indicator with the safe-area padding. The colour tints the phone's browser bar.
 export const viewport: Viewport = {
   viewportFit: "cover",
-  themeColor: "#07080c",
+  themeColor: "#05070a",
 };
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,16 +38,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const profile = await profileRepository.get();
 
   return (
-    <html lang="en" className={`${grotesk.variable} ${jetbrains.variable} h-full antialiased`}>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         <a
           href="#main"
-          className="sr-only z-50 rounded-full bg-brand px-4 py-2 text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+          className="sr-only z-50 rounded-xl bg-accent px-4 py-2 text-paper focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
         >
           Skip to content
         </a>
+        <AuroraBackground />
         <MotionProvider>
-          <SiteHeader />
+          <ScrollProgress />
+          <SiteHeader name={profile.name} photo={profile.photo} />
           <main id="main" className="flex-1">
             {children}
           </main>

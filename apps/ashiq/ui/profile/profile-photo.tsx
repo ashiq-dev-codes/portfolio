@@ -3,28 +3,30 @@ import type { ImageAsset } from "@/domain/image/image-asset";
 
 type ProfilePhotoProps = {
   photo: ImageAsset;
-  sizes: string;
+  /** Tailwind size classes, e.g. "size-32 sm:size-40". */
+  sizeClass: string;
   /** Only for the photo at the top of a page: it loads right away instead of lazily. */
   isPriority?: boolean;
 };
 
-/** The photo in a frame with a soft brand-coloured glow and gradient border. */
-export function ProfilePhoto({ photo, sizes, isPriority = false }: ProfilePhotoProps) {
+/** A round photo that floats gently, inside a slowly turning silver-and-cyan ring with a glow. */
+export function ProfilePhoto({ photo, sizeClass, isPriority = false }: ProfilePhotoProps) {
   return (
-    <div className="relative">
-      <div aria-hidden="true" className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand/35 to-brand-2/30 blur-2xl" />
-      <div className="relative rounded-[2rem] bg-gradient-to-br from-brand/70 via-line to-brand-2/70 p-px shadow-card">
-        <Image
-          src={photo.url}
-          alt={photo.alt}
-          width={photo.width}
-          height={photo.height}
-          sizes={sizes}
-          preload={isPriority}
-          loading={isPriority ? "eager" : "lazy"}
-          className="aspect-[4/5] h-auto w-full rounded-[calc(2rem-1px)] object-cover"
-        />
-      </div>
+    <div className={`relative mx-auto animate-float motion-reduce:animate-none ${sizeClass}`}>
+      <div aria-hidden="true" className="absolute -inset-8 rounded-full bg-accent/20 blur-3xl" />
+      <div
+        aria-hidden="true"
+        className="absolute -inset-1.5 animate-spin-slow rounded-full bg-[conic-gradient(var(--color-accent),var(--color-silver),var(--color-accent-deep),var(--color-accent))] motion-reduce:animate-none"
+      />
+      <Image
+        src={photo.url}
+        alt={photo.alt}
+        width={photo.width}
+        height={photo.height}
+        preload={isPriority}
+        loading={isPriority ? "eager" : "lazy"}
+        className="relative size-full rounded-full object-cover object-top ring-[3px] ring-paper"
+      />
     </div>
   );
 }

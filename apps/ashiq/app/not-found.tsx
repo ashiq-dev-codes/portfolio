@@ -8,19 +8,17 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <section className="page-container relative grid min-h-[70svh] place-items-center py-20 text-center">
-      <div aria-hidden="true" className="grid-backdrop absolute inset-0" />
-      <Reveal className="relative">
-        <p className="font-mono text-sm text-muted">
-          <span className="text-brand">$</span> GET {"<this page>"}
+    <section className="page-container grid min-h-[70svh] place-items-center py-20 text-center">
+      <Reveal>
+        <p className="text-gradient animate-float text-8xl font-semibold tracking-tight motion-reduce:animate-none sm:text-9xl">
+          404
         </p>
-        <p className="mt-3 font-mono text-7xl font-semibold text-gradient sm:text-9xl">404</p>
         <h1 className="mx-auto mt-6 max-w-lg text-3xl font-semibold tracking-tight text-balance sm:text-5xl">
-          This route doesn’t exist, but the work does.
+          This page doesn’t exist, but the work does.
         </h1>
-        <div className="mt-10 flex flex-wrap justify-center gap-3">
+        <div className="mx-auto mt-10 grid max-w-sm grid-cols-2 gap-3 sm:flex sm:max-w-none sm:justify-center">
           <ButtonLink href="/work" icon="arrow-right">
-            See my work
+            View work
           </ButtonLink>
           <ButtonLink href="/" variant="secondary">
             Back home

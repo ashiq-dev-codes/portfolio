@@ -18,7 +18,6 @@ export type RawProfile = {
   socials?: SocialLink[];
   cvUrl?: string | null;
   stats?: Metric[];
-  heroTags?: string[];
   education?: Education[];
   languages?: string[];
 };
@@ -39,7 +38,6 @@ export function mapProfile(raw: RawProfile): Profile {
     socials: raw.socials ?? [],
     cvUrl: raw.cvUrl?.trim() || null,
     stats: raw.stats ?? [],
-    heroTags: raw.heroTags ?? [],
     education: raw.education ?? [],
     languages: raw.languages ?? [],
   };

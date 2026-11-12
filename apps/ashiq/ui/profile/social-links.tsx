@@ -5,12 +5,12 @@ type SocialLinksProps = {
   socials: SocialLink[];
 };
 
-/** Round icon buttons for LinkedIn, GitHub and any other profile link. */
+/** Rounded-square icon buttons for LinkedIn, GitHub and any other profile link. */
 export function SocialLinks({ socials }: SocialLinksProps) {
   if (socials.length === 0) return null;
 
   return (
-    <ul className="flex flex-wrap gap-3">
+    <ul className="flex flex-wrap justify-center gap-3">
       {socials.map((social) => (
         <li key={social.url}>
           <a
@@ -19,7 +19,7 @@ export function SocialLinks({ socials }: SocialLinksProps) {
             rel="noreferrer"
             aria-label={social.label}
             title={social.label}
-            className="grid size-12 place-items-center rounded-full border border-line bg-surface text-muted transition duration-200 hover:-translate-y-0.5 hover:border-brand/60 hover:text-ink active:scale-95"
+            className="glass grid size-12 place-items-center rounded-xl text-muted transition duration-200 hover:-translate-y-1 hover:border-accent/60 hover:text-ink active:scale-95"
           >
             <Icon name={iconFor(social.label)} />
           </a>

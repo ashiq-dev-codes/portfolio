@@ -1,5 +1,4 @@
 import { featuredProjects } from "@/domain/project/project";
-import { allSkills } from "@/domain/skill/skill";
 import {
   experienceRepository,
   profileRepository,
@@ -7,12 +6,10 @@ import {
   skillRepository,
 } from "@/infrastructure/repositories";
 import { PageTransition } from "@/ui/components/page-transition";
-import { ExperiencePreview } from "@/ui/experience/experience-preview";
+import { ExperienceList } from "@/ui/experience/experience-list";
 import { ProfileHero } from "@/ui/profile/profile-hero";
-import { StatsRow } from "@/ui/profile/stats-row";
 import { FeaturedWork } from "@/ui/project/featured-work";
-import { SkillGroups } from "@/ui/skill/skill-groups";
-import { TechMarquee } from "@/ui/skill/tech-marquee";
+import { SkillList } from "@/ui/skill/skill-list";
 
 const maxFeaturedProjects = 4;
 
@@ -23,15 +20,14 @@ export default async function HomePage() {
     experienceRepository.getAll(),
     skillRepository.getAll(),
   ]);
+  const featured = featuredProjects(projects, maxFeaturedProjects);
 
   return (
     <PageTransition>
-      <ProfileHero profile={profile} />
-      <StatsRow stats={profile.stats} />
-      <TechMarquee items={allSkills(skills)} />
-      <FeaturedWork projects={featuredProjects(projects, maxFeaturedProjects)} />
-      <ExperiencePreview experience={experience} />
-      <SkillGroups groups={skills} />
+      <ProfileHero profile={profile} showcaseProjects={featured} />
+      <FeaturedWork projects={featured} />
+      <ExperienceList experience={experience} />
+      <SkillList groups={skills} />
     </PageTransition>
   );
 }
