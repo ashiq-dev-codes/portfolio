@@ -47,7 +47,7 @@ export function MobileNav() {
     if (dragIndex === null) return;
     setDragIndex(null);
     const item = navItems[indexAtPointer(event)];
-    if (item) openItem(item, (href) => router.push(href));
+    if (item) openItem(item, pathname, (href) => router.push(href));
   }
 
   // Taps and drags are handled by the pointer events above. A click with detail 0 comes from the
@@ -127,12 +127,20 @@ function indexAtPointer(event: PointerEvent<HTMLUListElement>): number {
   return Math.min(navItems.length - 1, Math.max(0, Math.floor(ratio * navItems.length)));
 }
 
-// Pages open through the router (keeping page transitions); Contact scrolls to the footer.
-function openItem(item: NavItem, push: (href: string) => void) {
-  if (!item.href.startsWith("#")) {
-    push(item.href);
+// Contact scrolls to the footer. Like iOS, the tab of the page you're already on scrolls back to
+// the top; other pages open through the router, keeping page transitions.
+function openItem(item: NavItem, pathname: string, push: (href: string) => void) {
+  if (item.href.startsWith("#")) {
+    document.getElementById(contactSectionId)?.scrollIntoView({ behavior: scrollBehavior() });
     return;
   }
-  const isReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.getElementById(contactSectionId)?.scrollIntoView({ behavior: isReducedMotion ? "auto" : "smooth" });
+  if (item.href === pathname) {
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
+    return;
+  }
+  push(item.href);
+}
+
+function scrollBehavior(): ScrollBehavior {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 }
